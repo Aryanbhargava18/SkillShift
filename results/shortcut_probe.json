@@ -68,5 +68,19 @@
     "bundled",
     "path",
     "intent"
-  ]
+  ],
+  "openclaw_rate": {
+    "all_training": {
+      "benign": 0.449,
+      "malicious": 0.223
+    },
+    "inside_SkillTrustBench": {
+      "benign": 0.462,
+      "malicious": 0.451
+    },
+    "mixed_only_training": {
+      "benign": 0.449,
+      "malicious": 0.44
+    }
+  }
 }

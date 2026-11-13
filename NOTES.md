@@ -57,13 +57,23 @@ At 1% false positives, source-disjoint recall falls to about 4-6%: these models 
    benchmark gets 91.7% accuracy (76.0% balanced across 10 sources; chance is 10%). So source style is
    easy to learn.
 2. **Does the malicious/benign SVM use it?** Its strongest "benign" words include `openclaw`,
-   `metadata openclaw` and `openclaw workspace`. That's boilerplate from the OpenClaw registry,
-   where SkillTrustBench's benign skills come from. It says nothing about safety.
-   The model learned "OpenClaw-formatted means safe". Benign skills from other sources don't
-   have that text, so they get flagged. That's the 66% false-positive rate.
+   `metadata openclaw` and `openclaw workspace`: boilerplate from skills published for the OpenClaw agent.
+3. **Why would that word look benign?** Share of training skills containing `openclaw`:
 
-**Check yourself:** Why is `openclaw` a shortcut feature, not a real signal? What would happen
-if an attacker copied OpenClaw's formatting?
+   | training data | benign | malicious |
+   |---|---|---|
+   | all training sources | 44.9% | 22.3% |
+   | inside SkillTrustBench only | 46.2% | 45.1% |
+   | mixed-label sources only | 44.9% | 44.0% |
+
+   Inside SkillTrustBench, the word says nothing: it's equally common in both labels. It only looks
+   "benign" because benign training data is mostly SkillTrustBench, while the biggest malicious source
+   (MalSkillBench) rarely mentions OpenClaw (5%). The correlation comes from **how the sources were mixed**,
+   not from what makes a skill dangerous. ATR's benign skills (the unseen test source) mostly don't
+   mention OpenClaw (9%), so the model loses its "safe" cue and flags them. That's the 66% false-positive rate.
+
+**Check yourself:** Why is `openclaw` a shortcut feature, not a real signal? Which row of the table
+proves it? What would happen if an attacker added OpenClaw boilerplate to a malicious skill?
 
 ## Step 4: fixing the data, not the model (2026-11-14)
 

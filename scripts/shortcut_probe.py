@@ -51,6 +51,21 @@ def main() -> None:
     print("top malicious features:", out["svm_top_malicious_features"])
     print("top benign features:", out["svm_top_benign_features"])
 
+    # 3. Why is "openclaw" a benign signal? Compare how often it appears per label,
+    #    overall vs inside the one big mixed-label source.
+    def rate(d):
+        has = d.text.str.contains("openclaw", case=False)
+        return {"benign": round(float(has[d.label == 0].mean()), 3),
+                "malicious": round(float(has[d.label == 1].mean()), 3)}
+
+    mixed = train[train.source_name.isin({"SkillTrustBench", "AgentTrap", "SkillTrojan"})]
+    out["openclaw_rate"] = {
+        "all_training": rate(train),
+        "inside_SkillTrustBench": rate(train[train.source_name == "SkillTrustBench"]),
+        "mixed_only_training": rate(mixed),
+    }
+    print("share of skills containing 'openclaw':", out["openclaw_rate"])
+
     with open("results/shortcut_probe.json", "w") as f:
         json.dump(out, f, indent=2)
 
