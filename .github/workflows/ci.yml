@@ -1,0 +1,19 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.7"
+      # No torch here: tests cover the metrics and the service, which don't need it.
+      - run: uv sync --frozen --no-default-groups --group serve --group dev
+      - run: uv run --no-sync ruff check src scripts tests
+      - run: uv run --no-sync pytest -q
