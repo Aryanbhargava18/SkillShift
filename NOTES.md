@@ -34,3 +34,17 @@ false-positive rate on benign skills from unseen sources.
 1. Why is "97% accuracy on the random split" not impressive here?
 2. What is a shortcut, and which column in the data would let you test for it?
 3. Why does the source-disjoint split mostly test benign skills, not malicious ones?
+
+## Step 2: baselines (2026-11-13)
+
+`uv run python scripts/baselines.py` writes `results/baselines.json`. Macro-F1 / share of benign skills wrongly flagged:
+
+| model | random | structural-disjoint | source-disjoint |
+|---|---|---|---|
+| keyword rules | 0.456 / 37% | 0.465 / 39% | 0.297 / 44% |
+| TF-IDF + logistic regression | 0.876 / 11% | 0.849 / 13% | 0.653 / 64% |
+| TF-IDF + linear SVM (paper's baseline) | 0.932 / 10% | 0.907 / 11% | 0.647 / 66% |
+
+We reproduce the paper: the SVM gets 0.932 on random (paper 0.932) and 0.647 on source-disjoint (paper 0.665),
+flagging 66% of unseen-source benign skills (paper 62.4%). So our evaluation setup matches theirs.
+At 1% false positives, source-disjoint recall falls to about 4-6%: these models can't be deployed on new sources.

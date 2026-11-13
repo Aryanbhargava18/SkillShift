@@ -18,4 +18,5 @@ uv run python -c "from huggingface_hub import snapshot_download; snapshot_downlo
 
 ```bash
 uv run python scripts/inspect_data.py   # step 1: dataset summary and split checks
+uv run python scripts/baselines.py      # step 2: keyword, TF-IDF+LR, TF-IDF+SVM on all splits
 ```
