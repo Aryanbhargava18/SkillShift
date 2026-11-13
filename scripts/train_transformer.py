@@ -53,6 +53,30 @@ def score(model, tok, texts, device, max_len, batch=8):
     return np.concatenate(out)
 
 
+def train_step(model, opt, tok, loss_fn, texts, labels, args, device, retries=3):
+    """Forward + backward on one batch; returns the loss, or None if it never fit in memory.
+
+    On an out-of-memory error the backward pass may have stopped halfway, leaving partial
+    gradients. So we clear all gradients (this drops the current accumulation window, at most
+    `accum` batches), free cached GPU memory, wait, and retry.
+    """
+    for attempt in range(retries):
+        try:
+            enc = tok(texts, truncation=True, max_length=args.max_len, padding=True, return_tensors="pt").to(device)
+            y = torch.tensor(labels, device=device)
+            loss = loss_fn(model(**enc).logits, y) / args.accum
+            loss.backward()
+            return loss.item()
+        except torch.OutOfMemoryError:
+            opt.zero_grad(set_to_none=True)
+            if device == "mps":
+                torch.mps.empty_cache()
+            elif device == "cuda":
+                torch.cuda.empty_cache()
+            time.sleep(5 * (attempt + 1))
+    return None
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--protocol", default="source_disjoint")
@@ -92,23 +116,25 @@ def main() -> None:
     sched = get_linear_schedule_with_warmup(opt, int(0.1 * steps), steps)
 
     texts, labels = train.text.tolist(), train.label.to_numpy()
-    t0, step = time.time(), 0
+    t0, step, skipped = time.time(), 0, 0
     for epoch in range(args.epochs):
         model.train()
         order = np.random.permutation(len(texts))
         running = 0.0
         for i in range(0, len(order), args.batch):
             idx = order[i:i + args.batch]
-            enc = tok([texts[j] for j in idx], truncation=True, max_length=args.max_len,
-                      padding=True, return_tensors="pt").to(device)
-            y = torch.tensor(labels[idx], device=device)
-            loss = loss_fn(model(**enc).logits, y) / args.accum
-            loss.backward()
-            running += loss.item()
+            loss = train_step(model, opt, tok, loss_fn, [texts[j] for j in idx], labels[idx], args, device)
+            if loss is None:
+                skipped += len(idx)
+                print(f"skipped batch after repeated out-of-memory errors ({skipped} skills so far)", flush=True)
+            else:
+                running += loss
             if (i // args.batch + 1) % args.accum == 0 or i + args.batch >= len(order):
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 opt.step(); sched.step(); opt.zero_grad()
                 step += 1
+                if device == "mps" and step % 50 == 0:
+                    torch.mps.empty_cache()
                 if step % 25 == 0:
                     print(f"epoch {epoch} step {step}/{steps} loss {running / 25:.4f} "
                           f"elapsed {(time.time() - t0) / 60:.1f} min", flush=True)
@@ -118,7 +144,7 @@ def main() -> None:
     s_test = score(model, tok, test.text.tolist(), device, args.max_len)
     t = threshold_for_fpr(val.label, s_val, 0.02)
     result = {
-        "run": run, "args": vars(args), "train_n": len(train),
+        "run": run, "args": vars(args), "train_n": len(train), "skipped_oom": skipped,
         "train_minutes": round((time.time() - t0) / 60, 1),
         "val": report(val.label, (s_val >= 0.5).astype(int), s_val),
         "default": report(test.label, (s_test >= 0.5).astype(int), s_test),
