@@ -83,7 +83,7 @@ labels, style can't separate them inside it, so the model has to learn content. 
 - Re-weighting doesn't help: the style signal is still there, just weighted differently.
 - Training on *less* data, but the *right* data, cuts false alarms on unseen-source benign skills ~17x.
 - The control proves it isn't "less data". Random subsets of the same size still flag 58%.
-- Cost: at the default threshold it catches fewer malicious skills (50% vs 95%). But its ranking is far
+- Cost: at the default threshold it catches fewer malicious skills (50% vs 96%). But its ranking is far
   better (PR-AUC 0.93 vs 0.79), so at any fixed false-alarm budget it catches more:
   at 2% FPR, 46% vs 8%.
 
