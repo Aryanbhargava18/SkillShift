@@ -2033,6 +2033,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "httpx" },
+    { name = "onnx" },
     { name = "pytest" },
     { name = "ruff" },
 ]
@@ -2065,6 +2066,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "httpx", specifier = ">=0.28.1" },
+    { name = "onnx", specifier = ">=1.23.2" },
     { name = "pytest", specifier = ">=9.2.0" },
     { name = "ruff", specifier = ">=0.14" },
 ]

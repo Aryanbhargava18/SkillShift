@@ -12,6 +12,9 @@ dependencies = [
     "scikit-learn>=1.9.1",
 ]
 
+[project.scripts]
+skillshift-scan = "skillshift.cli:main"
+
 [dependency-groups]
 # Fine-tuning and ONNX export.
 train = [
@@ -33,6 +36,7 @@ serve = [
 ]
 dev = [
     "httpx>=0.28.1",
+    "onnx>=1.23.2",
     "pytest>=9.2.0",
     "ruff>=0.14",
 ]
