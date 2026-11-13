@@ -8,7 +8,6 @@ one label, then a malicious/benign classifier can score well by recognising sour
 """
 
 import json
-import sys
 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -16,8 +15,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.svm import LinearSVC
 
-sys.path.insert(0, "src")
-from skillshift.data import load_split  # noqa: E402
+from skillshift.data import load_split
 
 
 def main() -> None:

@@ -20,17 +20,14 @@ deploy it. Validation comes from training sources, so this tests whether calibra
 """
 
 import json
-import sys
 
-import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 
-sys.path.insert(0, "src")
-from skillshift.data import load_split  # noqa: E402
-from skillshift.metrics import per_source, report, threshold_for_fpr  # noqa: E402
+from skillshift.data import load_split
+from skillshift.metrics import per_source, report, threshold_for_fpr
 
 MIXED_SOURCES = {"SkillTrustBench", "AgentTrap", "SkillTrojan"}
 

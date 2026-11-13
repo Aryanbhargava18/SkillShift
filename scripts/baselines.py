@@ -10,16 +10,14 @@ Writes results/baselines.json.
 
 import json
 import re
-import sys
 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 
-sys.path.insert(0, "src")
-from skillshift.data import PROTOCOLS, load_split  # noqa: E402
-from skillshift.metrics import report  # noqa: E402
+from skillshift.data import PROTOCOLS, load_split
+from skillshift.metrics import report
 
 # Things a malicious skill often does: download-and-run, read secrets, send data out,
 # hide payloads, or override the agent's instructions.
