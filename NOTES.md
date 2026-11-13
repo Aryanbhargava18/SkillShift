@@ -70,7 +70,8 @@ At 1% false positives, source-disjoint recall falls to about 4-6%: these models 
    "benign" because benign training data is mostly SkillTrustBench, while the biggest malicious source
    (MalSkillBench) rarely mentions OpenClaw (5%). The correlation comes from **how the sources were mixed**,
    not from what makes a skill dangerous. ATR's benign skills (the unseen test source) mostly don't
-   mention OpenClaw (9%), so the model loses its "safe" cue and flags them. That's the 66% false-positive rate.
+   mention OpenClaw (9%), so the model loses this "safe" cue. `openclaw` is the clearest example, not the
+   only one: the model uses many such style cues together, and their combined effect is the 66% false-positive rate.
 
 **Check yourself:** Why is `openclaw` a shortcut feature, not a real signal? Which row of the table
 proves it? What would happen if an attacker added OpenClaw boilerplate to a malicious skill?
