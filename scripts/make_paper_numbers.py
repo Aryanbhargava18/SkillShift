@@ -147,9 +147,11 @@ def mechanism_sentence(mech):
                    f"while a size-matched control that leaves pairs intact stays at {pct(sm_fpr, 0)}, "
                    f"so the gain comes from the minimal-pair construction, not label mixing alone")
     else:
-        verdict = (f"breaking the pairs leaves the benign false-positive rate at {pct(bp_fpr, 0)}, "
-                   f"close to the {pct(sm_fpr, 0)} of a size-matched control, so label mixing within a "
-                   f"source\\,---\\,not the pairing itself\\,---\\,drives the gain")
+        all_fpr = mech["runs"]["all"]["default"]["benign_fpr"]
+        verdict = (f"breaking the pairs raises the benign false-positive rate only to {pct(bp_fpr, 0)}, "
+                   f"modestly above the {pct(sm_fpr, 0)} of a size-matched control and far below the "
+                   f"{pct(all_fpr, 0)} of all-data, so label mixing within a source drives most of the "
+                   f"gain while the pairing adds a little")
     return (f"In these sources {share} of malicious skills are injected copies of a benign skill; "
             f"{verdict}.")
 

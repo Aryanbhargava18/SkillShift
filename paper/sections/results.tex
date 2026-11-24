@@ -20,7 +20,10 @@ If a source contains only one label it can teach only style; if it contains both
 separate the labels inside it, so the model must use content. We therefore train only on the sources
 that contain both labels. On the unseen-source test set this cuts the benign false-positive rate from
 \FprAll{} to \FprMixed{} (95\% CI \FprMixedCI{}) and raises PR-AUC from \PrAll{} to \PrMixed{}
-(Table~\ref{tab:fix}).
+(Table~\ref{tab:fix}). We state the main caveat up front: the both-label sources are dominated by
+SkillTrustBench (\MixedSkillTrustBench{} skills, against \MixedAgentTrap{} from AgentTrap and
+\MixedSkillTrojan{} from SkillTrojan), so in practice this fix is ``train on SkillTrustBench'', and
+\S\ref{sec:mechanism} asks what about that source makes it work.
 
 \begin{table}[t]
 \caption{Word TF-IDF + logistic regression on the unseen-source test set, default $0.5$ threshold.}
@@ -71,7 +74,9 @@ editing one feature cannot fix an all-data model; changing the training composit
 \section{Fine-tuned transformer}
 \label{sec:transformer}
 To check that the shortcut is a property of the data and not of linear models, we fine-tune
-ModernBERT-base on both training sets and score it on the same unseen-source test skills, comparing
-every model with a paired, class-stratified bootstrap. \TransformerSentence{} Per-source rates on the
-small benign test groups (ATR, SkillFortifyBench) are reported with exact Clopper-Pearson intervals,
-since ATR contributes only \TestAtrBenign{} of the \TestBenign{} benign test skills.
+ModernBERT-base (one seed per training set) on both training sets and score it on the same
+unseen-source test skills, comparing every model with a paired, class-stratified bootstrap.
+\TransformerSentence{} Per-source rates on the small benign test groups (ATR, SkillFortifyBench) are
+reported with exact Clopper-Pearson intervals, since ATR contributes only \TestAtrBenign{} of the
+\TestBenign{} benign test skills. Quantising the deployed mixed-only model to int8 for the released
+ONNX scanner changes 2.2\% of test verdicts, acceptable for a cheap pre-install filter.
