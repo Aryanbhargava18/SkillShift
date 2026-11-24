@@ -26,6 +26,11 @@ than accuracy.
 \textbf{Compute.} ModernBERT was fine-tuned once per training set (seed 0) on a laptop GPU, on the first 512
 tokens only. Transformer results are a single run, not a distribution over seeds.
 
+\textbf{Stronger baselines.} We show that static (source, label) re-weighting does not close the gap,
+but we do not evaluate GroupDRO, JTT, or adversarial source-removal. Our claim is that a simple
+data-composition choice is sufficient, not that it beats every robust-training method; a head-to-head
+comparison is future work.
+
 \section{Conclusion}
 \label{sec:conclusion}
 Malicious-skill detectors trained on merged benchmarks learn where a skill came from. Training only where both
