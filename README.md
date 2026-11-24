@@ -4,6 +4,8 @@
 
 On [MaliciousSkillBench](https://huggingface.co/datasets/ProtectSkills/MaliciousSkillBench) (9,740 skills), detectors that look strong on a random split wrongly flag **two-thirds of benign skills from sources they were not trained on**. This repo shows *why*, shows a fix, and shows the same bias is an attack surface. On **400 real GitHub skills**, the merged-data detector flags **30%** as malicious while the fix flags **5%**. Full writeup: [paper/skillshift.pdf](paper/skillshift.pdf).
 
+![Benign false-positive rate by model, and the good-word attack dose-response](paper/fig_results.png)
+
 ## What this project demonstrates
 - **LLM fine-tuning** — full fine-tuning of **ModernBERT**, and **parameter-efficient fine-tuning (LoRA / QLoRA, 4-bit) of Qwen2.5** via **PEFT** (`scripts/train_lora.py`, `docs/RUN_ON_GPU.md`).
 - **Evaluation harness & statistical rigor** — an out-of-distribution (source-disjoint) evaluation protocol with **paired bootstrap confidence intervals** and **exact Clopper-Pearson** intervals for small groups; every paper number is generated from `results/*.json`, none typed by hand.

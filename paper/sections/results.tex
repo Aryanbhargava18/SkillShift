@@ -17,6 +17,15 @@ mixed, exactly the mechanism of \cite{arp2022,torralba2011}.
 
 \section{Training where both labels share a source}
 \label{sec:fix}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_results.png}
+\caption{Left: benign false-positive rate on unseen-source test skills; training only on both-label
+sources cuts it sharply for both a linear model and a fine-tuned transformer. Right: a good-word attack
+that appends the detector's own benign source-style tokens evades far more than random tokens at every
+injection size.}
+\label{fig:results}
+\end{figure}
 If a source contains only one label it can teach only style; if it contains both, style cannot
 separate the labels inside it, so the model must use content. We therefore train only on the sources
 that contain both labels. On the unseen-source test set this cuts the benign false-positive rate from
