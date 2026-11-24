@@ -1380,6 +1380,27 @@ wheels = [
 ]
 
 [[package]]
+name = "peft"
+version = "0.22.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "accelerate" },
+    { name = "huggingface-hub" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "psutil" },
+    { name = "pyyaml" },
+    { name = "safetensors" },
+    { name = "torch" },
+    { name = "tqdm" },
+    { name = "transformers" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/14/47/277ac750804eb771f8b7d3126870c01bb1270121b63e5b0a12e6e19b8fe4/peft-0.22.0.tar.gz", hash = "sha256:e7fca396b98e6c1b0b02538e45efd84875c4d0d074c29c837e372cd7c845647a", size = 1108661, upload-time = "2026-11-19T14:55:41.595Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/60/f2/107e752b64f5636ff92aed4010bad2448d9dd15d9fcf6c1c01b1075dfd76/peft-0.22.0-py3-none-any.whl", hash = "sha256:397f09710e3e1b6ad730211468839aa271732b51a50e99d4f44f2a6e8d9a9f0b", size = 886740, upload-time = "2026-11-19T14:55:39.08Z" },
+]
+
+[[package]]
 name = "pluggy"
 version = "1.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2050,6 +2071,7 @@ train = [
     { name = "accelerate" },
     { name = "onnx" },
     { name = "onnxscript" },
+    { name = "peft" },
     { name = "torch" },
     { name = "transformers" },
 ]
@@ -2083,6 +2105,7 @@ train = [
     { name = "accelerate", specifier = ">=1.15.0" },
     { name = "onnx", specifier = ">=1.23.2" },
     { name = "onnxscript", specifier = ">=0.7.2" },
+    { name = "peft", specifier = ">=0.18.0" },
     { name = "torch", specifier = ">=2.15.0" },
     { name = "transformers", specifier = ">=5.23.0" },
 ]
