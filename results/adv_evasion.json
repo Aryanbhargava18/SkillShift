@@ -1,0 +1,75 @@
+{
+  "headline_k": 8,
+  "ks": [
+    1,
+    2,
+    3,
+    5,
+    8,
+    13,
+    21,
+    40
+  ],
+  "dose_response": {
+    "all": {
+      "benign": [
+        0.064,
+        0.082,
+        0.11,
+        0.129,
+        0.17,
+        0.198,
+        0.238,
+        0.292
+      ],
+      "random": [
+        0.011,
+        0.02,
+        0.021,
+        0.032,
+        0.052,
+        0.075,
+        0.116,
+        0.079
+      ]
+    },
+    "mixed_only": {
+      "benign": [
+        0.011,
+        0.02,
+        0.031,
+        0.044,
+        0.07,
+        0.088,
+        0.116,
+        0.159
+      ],
+      "random": [
+        0.006,
+        0.008,
+        0.008,
+        0.012,
+        0.01,
+        0.021,
+        0.064,
+        0.067
+      ]
+    }
+  },
+  "models": {
+    "all": {
+      "threshold": 0.8283,
+      "malicious_flagged": 334,
+      "asr_benign_at_k": 0.17,
+      "asr_random_at_k": 0.052,
+      "source_specific_gap": 0.118
+    },
+    "mixed_only": {
+      "threshold": 0.634,
+      "malicious_flagged": 167,
+      "asr_benign_at_k": 0.07,
+      "asr_random_at_k": 0.01,
+      "source_specific_gap": 0.06
+    }
+  }
+}

@@ -1,0 +1,51 @@
+modernbert_source_disjoint_mixed_only_s0: device mps, train 4092, val 468, test 1384
+W1124 13:58:31.790000 25961 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/136 [00:00<?, ?it/s]Loading weights: 100%|██████████| 136/136 [00:00<00:00, 1835.16it/s]
+[transformers] [1mModernBertForSequenceClassification LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     | 
+------------------+------------+-
+decoder.bias      | UNEXPECTED | 
+classifier.weight | MISSING    | 
+classifier.bias   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+epoch 0 step 25/512 loss 0.7174 elapsed 3.7 min
+epoch 0 step 50/512 loss 0.6545 elapsed 6.6 min
+epoch 0 step 75/512 loss 0.5018 elapsed 9.4 min
+epoch 0 step 100/512 loss 0.2775 elapsed 12.2 min
+epoch 0 step 125/512 loss 0.1906 elapsed 14.9 min
+epoch 0 step 150/512 loss 0.1500 elapsed 17.5 min
+epoch 0 step 175/512 loss 0.1234 elapsed 20.2 min
+epoch 0 step 200/512 loss 0.1233 elapsed 22.9 min
+epoch 0 step 225/512 loss 0.1205 elapsed 25.6 min
+epoch 0 step 250/512 loss 0.1202 elapsed 28.1 min
+epoch 1 step 275/512 loss 0.0535 elapsed 30.9 min
+epoch 1 step 300/512 loss 0.1129 elapsed 33.8 min
+epoch 1 step 325/512 loss 0.0580 elapsed 36.7 min
+epoch 1 step 350/512 loss 0.1332 elapsed 42.2 min
+epoch 1 step 375/512 loss 0.0781 elapsed 50.5 min
+epoch 1 step 400/512 loss 0.1092 elapsed 87.5 min
+epoch 1 step 425/512 loss 0.0751 elapsed 90.3 min
+epoch 1 step 450/512 loss 0.0901 elapsed 94.2 min
+epoch 1 step 475/512 loss 0.0556 elapsed 97.9 min
+epoch 1 step 500/512 loss 0.1063 elapsed 101.2 min
+{
+ "default": {
+  "macro_f1": 0.639,
+  "benign_fpr": 0.2,
+  "malicious_recall": 0.534,
+  "pr_auc": 0.787,
+  "recall_at_1pct_fpr": 0.031,
+  "recall_at_2pct_fpr": 0.055
+ },
+ "val_2pct": {
+  "macro_f1": 0.657,
+  "benign_fpr": 0.2,
+  "malicious_recall": 0.564,
+  "pr_auc": 0.787,
+  "recall_at_1pct_fpr": 0.031,
+  "recall_at_2pct_fpr": 0.055
+ }
+}

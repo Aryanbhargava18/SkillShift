@@ -1,0 +1,171 @@
+=== mechanism (TF-IDF ablations) Tue Nov 24 19:51:33 IST 2026
+pairing: {"mixed_train_n": 4092, "by_source": {"SkillTrustBench": 3973, "AgentTrap": 116, "SkillTrojan": 3}, "malicious": 2571, "malicious_with_benign_twin": 2125, "benign_with_malicious_twin": 1209, "twin_groups": 1078, "share_of_twin_lines_kept_median": 1.0, "lines_added_median": 1, "lines_added_p90": 6}
+all                                n= 7513 FPR 0.650 recall 0.957 PR-AUC 0.793 R@2%FPR 0.081
+mixed_only                         n= 4092 FPR 0.037 recall 0.504 PR-AUC 0.928 R@2%FPR 0.460
+break_pairs_s0                     n= 2458 FPR 0.081 recall 0.706 PR-AUC 0.942 R@2%FPR 0.492
+size_matched_mixed_s0              n= 2458 FPR 0.073 recall 0.670 PR-AUC 0.943 R@2%FPR 0.493
+break_pairs_s1                     n= 2421 FPR 0.095 recall 0.573 PR-AUC 0.907 R@2%FPR 0.296
+size_matched_mixed_s1              n= 2421 FPR 0.068 recall 0.510 PR-AUC 0.895 R@2%FPR 0.191
+break_pairs_s2                     n= 2432 FPR 0.114 recall 0.557 PR-AUC 0.892 R@2%FPR 0.373
+size_matched_mixed_s2              n= 2432 FPR 0.053 recall 0.548 PR-AUC 0.926 R@2%FPR 0.354
+mixed_plus/Agent Skill Malware     n= 4119 FPR 0.048 recall 0.530 PR-AUC 0.919 R@2%FPR 0.411
+mixed_plus/MalSkillBench           n= 7180 FPR 0.606 recall 0.892 PR-AUC 0.729 R@2%FPR 0.024
+mixed_plus/MaliciousAgentSkillsBench n= 4226 FPR 0.116 recall 0.574 PR-AUC 0.886 R@2%FPR 0.322
+mixed_plus/SkillLeakBench          n= 4123 FPR 0.057 recall 0.528 PR-AUC 0.913 R@2%FPR 0.362
+mixed_plus/SkillSafetyBench        n= 4233 FPR 0.105 recall 0.821 PR-AUC 0.963 R@2%FPR 0.634
+all_no_openclaw                    n= 7513 FPR 0.642 recall 0.952 PR-AUC 0.796 R@2%FPR 0.076
+all_no_frontmatter                 n= 7513 FPR 0.596 recall 0.938 PR-AUC 0.788 R@2%FPR 0.069
+bootstrap: {"benign_fpr_at_0.5": {"mixed_only": [0.0367, 0.022, 0.0532], "all": [0.6495, 0.6092, 0.6899], "mixed_only-all": [-0.6128, -0.6551, -0.5706], "all-mixed_only": [0.6128, 0.5706, 0.6551]}, "pr_auc": {"mixed_only": [0.928, 0.9156, 0.9397], "all": [0.7926, 0.7674, 0.8199], "mixed_only-all": [0.1354, 0.1107, 0.1583], "all-mixed_only": [-0.1354, -0.1583, -0.1107]}, "recall_at_2pct_fpr_oracle": {"mixed_only": [0.4601, 0.3254, 0.5101], "all": [0.081, 0.0513, 0.1192], "mixed_only-all": [0.3791, 0.2491, 0.4315], "all-mixed_only": [-0.3791, -0.4315, -0.2491]}}
+=== compare_models (bootstrap CIs) Tue Nov 24 19:52:54 IST 2026
+benign_fpr_at_0.5 {'word_lr_all': [0.6495, 0.6092, 0.6899], 'word_lr_mixed_only': [0.0367, 0.022, 0.0532], 'modernbert_all': [0.789, 0.756, 0.8239], 'modernbert_mixed_only': [0.2, 0.167, 0.2349]}
+pr_auc {'word_lr_all': [0.7926, 0.7674, 0.8199], 'word_lr_mixed_only': [0.928, 0.9156, 0.9397], 'modernbert_all': [0.6588, 0.635, 0.6886], 'modernbert_mixed_only': [0.7873, 0.759, 0.8151]}
+recall_at_2pct_fpr_oracle {'word_lr_all': [0.081, 0.0513, 0.1192], 'word_lr_mixed_only': [0.4601, 0.3254, 0.5101], 'modernbert_all': [0.0203, 0.0036, 0.0477], 'modernbert_mixed_only': [0.0548, 0.0274, 0.087]}
+fpr_at_95_recall {'word_lr_all': [0.6367, 0.5761, 0.6917], 'word_lr_mixed_only': [0.4624, 0.3982, 0.5339], 'modernbert_all': [0.7138, 0.6514, 0.7707], 'modernbert_mixed_only': [0.5633, 0.4844, 0.6312]}
+fpr_at_99_recall {'word_lr_all': [0.8349, 0.7376, 0.9046], 'word_lr_mixed_only': [0.6807, 0.5926, 0.8514], 'modernbert_all': [0.8183, 0.7706, 0.8991], 'modernbert_mixed_only': [0.7119, 0.6587, 0.811]}
+=== adv_evasion (attack) Tue Nov 24 19:53:05 IST 2026
+all         flagged= 334  ASR=0.889  control=0.446  drop=0.493
+mixed_only  flagged= 167  ASR=0.976  control=0.617  drop=0.279
+=== export_onnx Tue Nov 24 19:53:21 IST 2026
+W1124 19:53:26.258000 85062 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/138 [00:00<?, ?it/s]Loading weights: 100%|██████████| 138/138 [00:00<00:00, 6862.62it/s]
+/Users/aryan./Documents/lfxx/skillshift/scripts/export_onnx.py:71: DeprecationWarning: You are using the legacy TorchScript-based ONNX export. Starting in PyTorch 2.9, the new torch.export-based ONNX exporter has become the default. Learn more about the new export logic: https://docs.pytorch.org/docs/stable/onnx_export.html. For exporting control flow: https://pytorch.org/tutorials/beginner/onnx/export_control_flow_model_to_onnx_tutorial.html
+  torch.onnx.export(
+/Users/aryan./Documents/lfxx/skillshift/.venv/lib/python3.12/site-packages/transformers/masking_utils.py:244: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  if (padding_length := kv_length + kv_offset - attention_mask.shape[-1]) > 0:
+/Users/aryan./Documents/lfxx/skillshift/.venv/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:159: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  is_causal = q_length > 1 and attention_mask is None and is_causal
+/Users/aryan./Documents/lfxx/skillshift/.venv/lib/python3.12/site-packages/torch/onnx/_internal/torchscript_exporter/symbolic_opset11.py:955: UserWarning: Exporting aten::index operator of advanced indexing in opset 17 is achieved by combination of multiple ONNX operators, including Reshape, Transpose, Concat, and Gather. If indices include negative values, the exported graph will produce incorrect results.
+  return opset9.index(g, self, index)
+WARNING:root:Please consider to run pre-processing before quantization. Refer to example: https://github.com/microsoft/onnxruntime-inference-examples/blob/main/quantization/image_classification/cpu/ReadMe.md 
+{
+ "run": "modernbert_source_disjoint_mixed_only_s0",
+ "threads": 4,
+ "max_length": 512,
+ "size_mb": {
+  "onnx_fp32": 599.1,
+  "onnx_int8": 150.7
+ },
+ "agreement_on_source_disjoint_test": {
+  "tokenizer_mismatches_of_300": 0,
+  "max_abs_diff_fp32_vs_torch": 2e-05,
+  "max_abs_diff_int8_vs_torch": 0.72924,
+  "verdict_flips_int8_vs_torch": 31,
+  "torch": {
+   "macro_f1": 0.657,
+   "benign_fpr": 0.2,
+   "malicious_recall": 0.564,
+   "pr_auc": 0.787,
+   "recall_at_1pct_fpr": 0.031,
+   "recall_at_2pct_fpr": 0.055
+  },
+  "onnx_int8": {
+   "macro_f1": 0.65,
+   "benign_fpr": 0.198,
+   "malicious_recall": 0.552,
+   "pr_auc": 0.789,
+   "recall_at_1pct_fpr": 0.056,
+   "recall_at_2pct_fpr": 0.077
+  }
+ },
+ "latency_single_request_cpu": {
+  "torch_fp32": {
+   "p50_ms": 154.3,
+   "p95_ms": 180.6,
+   "mean_ms": 140.9
+  },
+  "onnx_fp32": {
+   "p50_ms": 429.7,
+   "p95_ms": 472.8,
+   "mean_ms": 375.1
+  },
+  "onnx_int8": {
+   "p50_ms": 229.1,
+   "p95_ms": 249.9,
+   "mean_ms": 194.6
+  }
+ }
+}
+=== eval_chunked Tue Nov 24 20:12:31 IST 2026
+W1124 20:12:35.346000 89603 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/138 [00:00<?, ?it/s]Loading weights: 100%|██████████| 138/138 [00:00<00:00, 6510.40it/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (21299 > 8192). Running this sequence through the model will result in indexing errors
+{
+ "head": {
+  "default": {
+   "macro_f1": 0.639,
+   "benign_fpr": 0.2,
+   "malicious_recall": 0.534,
+   "pr_auc": 0.787,
+   "recall_at_1pct_fpr": 0.031,
+   "recall_at_2pct_fpr": 0.055
+  },
+  "val_2pct": {
+   "macro_f1": 0.657,
+   "benign_fpr": 0.2,
+   "malicious_recall": 0.564,
+   "pr_auc": 0.787,
+   "recall_at_1pct_fpr": 0.031,
+   "recall_at_2pct_fpr": 0.055
+  },
+  "val_2pct_per_source": {
+   "ATR Skill Security Benchmark": {
+    "benign_n": 455,
+    "benign_fpr": 0.042,
+    "malicious_n": 21,
+    "malicious_recall": 0.333
+   },
+   "SkillFortifyBench": {
+    "benign_n": 90,
+    "benign_fpr": 1.0,
+    "malicious_n": 90,
+    "malicious_recall": 1.0
+   },
+   "SkillHarm": {
+    "malicious_n": 728,
+    "malicious_recall": 0.516
+   }
+  }
+ },
+ "max": {
+  "default": {
+   "macro_f1": 0.655,
+   "benign_fpr": 0.222,
+   "malicious_recall": 0.577,
+   "pr_auc": 0.777,
+   "recall_at_1pct_fpr": 0.031,
+   "recall_at_2pct_fpr": 0.057
+  },
+  "val_2pct": {
+   "macro_f1": 0.629,
+   "benign_fpr": 0.2,
+   "malicious_recall": 0.518,
+   "pr_auc": 0.777,
+   "recall_at_1pct_fpr": 0.031,
+   "recall_at_2pct_fpr": 0.057
+  },
+  "val_2pct_per_source": {
+   "ATR Skill Security Benchmark": {
+    "benign_n": 455,
+    "benign_fpr": 0.042,
+    "malicious_n": 21,
+    "malicious_recall": 0.286
+   },
+   "SkillFortifyBench": {
+    "benign_n": 90,
+    "benign_fpr": 1.0,
+    "malicious_n": 90,
+    "malicious_recall": 1.0
+   },
+   "SkillHarm": {
+    "malicious_n": 728,
+    "malicious_recall": 0.466
+   }
+  }
+ }
+}
+=== make_paper_numbers Tue Nov 24 20:20:29 IST 2026
+/Users/aryan./Documents/lfxx/skillshift/scripts/make_paper_numbers.py:7: SyntaxWarning: invalid escape sequence '\P'
+  \PENDING marker, so the paper always compiles and missing numbers are obvious.
+wrote paper/numbers.tex with 25/25 macros filled
+=== make_tables Tue Nov 24 20:20:29 IST 2026
+=== DONE Tue Nov 24 20:20:29 IST 2026

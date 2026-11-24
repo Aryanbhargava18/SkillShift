@@ -1,0 +1,48 @@
+{
+  "run": "modernbert_source_disjoint_mixed_only_s0",
+  "threads": 4,
+  "max_length": 512,
+  "size_mb": {
+    "onnx_fp32": 599.1,
+    "onnx_int8": 150.7
+  },
+  "agreement_on_source_disjoint_test": {
+    "tokenizer_mismatches_of_300": 0,
+    "max_abs_diff_fp32_vs_torch": 2e-05,
+    "max_abs_diff_int8_vs_torch": 0.72924,
+    "verdict_flips_int8_vs_torch": 31,
+    "torch": {
+      "macro_f1": 0.657,
+      "benign_fpr": 0.2,
+      "malicious_recall": 0.564,
+      "pr_auc": 0.787,
+      "recall_at_1pct_fpr": 0.031,
+      "recall_at_2pct_fpr": 0.055
+    },
+    "onnx_int8": {
+      "macro_f1": 0.65,
+      "benign_fpr": 0.198,
+      "malicious_recall": 0.552,
+      "pr_auc": 0.789,
+      "recall_at_1pct_fpr": 0.056,
+      "recall_at_2pct_fpr": 0.077
+    }
+  },
+  "latency_single_request_cpu": {
+    "torch_fp32": {
+      "p50_ms": 154.3,
+      "p95_ms": 180.6,
+      "mean_ms": 140.9
+    },
+    "onnx_fp32": {
+      "p50_ms": 429.7,
+      "p95_ms": 472.8,
+      "mean_ms": 375.1
+    },
+    "onnx_int8": {
+      "p50_ms": 229.1,
+      "p95_ms": 249.9,
+      "mean_ms": 194.6
+    }
+  }
+}

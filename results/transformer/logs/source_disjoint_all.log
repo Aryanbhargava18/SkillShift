@@ -1,0 +1,68 @@
+modernbert_source_disjoint_all_s0: device mps, train 7513, val 835, test 1384
+W1124 15:43:56.666000 44035 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/136 [00:00<?, ?it/s]Loading weights: 100%|██████████| 136/136 [00:00<00:00, 5435.83it/s]
+[transformers] [1mModernBertForSequenceClassification LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     | 
+------------------+------------+-
+decoder.bias      | UNEXPECTED | 
+classifier.weight | MISSING    | 
+classifier.bias   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+epoch 0 step 25/940 loss 0.6273 elapsed 3.0 min
+epoch 0 step 50/940 loss 0.5485 elapsed 6.3 min
+epoch 0 step 75/940 loss 0.5205 elapsed 9.5 min
+epoch 0 step 100/940 loss 0.5208 elapsed 12.1 min
+epoch 0 step 125/940 loss 0.4600 elapsed 14.8 min
+epoch 0 step 150/940 loss 0.4503 elapsed 17.4 min
+epoch 0 step 175/940 loss 0.3230 elapsed 20.2 min
+epoch 0 step 200/940 loss 0.2401 elapsed 56.8 min
+epoch 0 step 225/940 loss 0.3246 elapsed 65.7 min
+epoch 0 step 250/940 loss 0.2572 elapsed 69.9 min
+epoch 0 step 275/940 loss 0.2638 elapsed 128.2 min
+epoch 0 step 300/940 loss 0.2746 elapsed 133.0 min
+epoch 0 step 325/940 loss 0.1428 elapsed 136.3 min
+epoch 0 step 350/940 loss 0.3667 elapsed 139.5 min
+epoch 0 step 375/940 loss 0.2537 elapsed 143.8 min
+epoch 0 step 400/940 loss 0.2056 elapsed 147.2 min
+epoch 0 step 425/940 loss 0.1567 elapsed 150.9 min
+epoch 0 step 450/940 loss 0.2304 elapsed 155.2 min
+epoch 1 step 475/940 loss 0.0316 elapsed 157.8 min
+epoch 1 step 500/940 loss 0.1270 elapsed 161.3 min
+epoch 1 step 525/940 loss 0.1141 elapsed 169.0 min
+epoch 1 step 550/940 loss 0.1700 elapsed 172.1 min
+epoch 1 step 575/940 loss 0.1447 elapsed 174.8 min
+epoch 1 step 600/940 loss 0.1051 elapsed 177.4 min
+epoch 1 step 625/940 loss 0.1663 elapsed 180.1 min
+epoch 1 step 650/940 loss 0.0958 elapsed 185.0 min
+epoch 1 step 675/940 loss 0.1297 elapsed 188.2 min
+epoch 1 step 700/940 loss 0.0733 elapsed 191.2 min
+epoch 1 step 725/940 loss 0.1378 elapsed 194.2 min
+epoch 1 step 750/940 loss 0.1922 elapsed 196.8 min
+epoch 1 step 775/940 loss 0.1046 elapsed 199.3 min
+epoch 1 step 800/940 loss 0.1460 elapsed 201.8 min
+epoch 1 step 825/940 loss 0.0974 elapsed 204.5 min
+epoch 1 step 850/940 loss 0.1732 elapsed 207.0 min
+epoch 1 step 875/940 loss 0.1173 elapsed 209.5 min
+epoch 1 step 900/940 loss 0.1475 elapsed 211.9 min
+epoch 1 step 925/940 loss 0.0696 elapsed 215.4 min
+{
+ "default": {
+  "macro_f1": 0.565,
+  "benign_fpr": 0.789,
+  "malicious_recall": 0.983,
+  "pr_auc": 0.659,
+  "recall_at_1pct_fpr": 0.005,
+  "recall_at_2pct_fpr": 0.02
+ },
+ "val_2pct": {
+  "macro_f1": 0.624,
+  "benign_fpr": 0.472,
+  "malicious_recall": 0.718,
+  "pr_auc": 0.659,
+  "recall_at_1pct_fpr": 0.005,
+  "recall_at_2pct_fpr": 0.02
+ }
+}

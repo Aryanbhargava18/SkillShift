@@ -1,0 +1,76 @@
+{
+  "run": "modernbert_source_disjoint_mixed_only_s0",
+  "test_skills_with_more_than_one_window": 844,
+  "head": {
+    "default": {
+      "macro_f1": 0.639,
+      "benign_fpr": 0.2,
+      "malicious_recall": 0.534,
+      "pr_auc": 0.787,
+      "recall_at_1pct_fpr": 0.031,
+      "recall_at_2pct_fpr": 0.055
+    },
+    "val_2pct": {
+      "macro_f1": 0.657,
+      "benign_fpr": 0.2,
+      "malicious_recall": 0.564,
+      "pr_auc": 0.787,
+      "recall_at_1pct_fpr": 0.031,
+      "recall_at_2pct_fpr": 0.055
+    },
+    "val_2pct_per_source": {
+      "ATR Skill Security Benchmark": {
+        "benign_n": 455,
+        "benign_fpr": 0.042,
+        "malicious_n": 21,
+        "malicious_recall": 0.333
+      },
+      "SkillFortifyBench": {
+        "benign_n": 90,
+        "benign_fpr": 1.0,
+        "malicious_n": 90,
+        "malicious_recall": 1.0
+      },
+      "SkillHarm": {
+        "malicious_n": 728,
+        "malicious_recall": 0.516
+      }
+    }
+  },
+  "max": {
+    "default": {
+      "macro_f1": 0.655,
+      "benign_fpr": 0.222,
+      "malicious_recall": 0.577,
+      "pr_auc": 0.777,
+      "recall_at_1pct_fpr": 0.031,
+      "recall_at_2pct_fpr": 0.057
+    },
+    "val_2pct": {
+      "macro_f1": 0.629,
+      "benign_fpr": 0.2,
+      "malicious_recall": 0.518,
+      "pr_auc": 0.777,
+      "recall_at_1pct_fpr": 0.031,
+      "recall_at_2pct_fpr": 0.057
+    },
+    "val_2pct_per_source": {
+      "ATR Skill Security Benchmark": {
+        "benign_n": 455,
+        "benign_fpr": 0.042,
+        "malicious_n": 21,
+        "malicious_recall": 0.286
+      },
+      "SkillFortifyBench": {
+        "benign_n": 90,
+        "benign_fpr": 1.0,
+        "malicious_n": 90,
+        "malicious_recall": 1.0
+      },
+      "SkillHarm": {
+        "malicious_n": 728,
+        "malicious_recall": 0.466
+      }
+    }
+  }
+}
