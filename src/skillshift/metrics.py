@@ -38,6 +38,50 @@ def threshold_for_fpr(y, scores, max_fpr):
     return float(benign[k]) + 1e-9 if k < len(benign) else float(benign[-1])
 
 
+def bootstrap_ci(y, scores_by_model, metric, n_boot=2000, seed=0, alpha=0.05):
+    """Paired, class-stratified bootstrap of a test-set metric.
+
+    scores_by_model: {name: scores} for models evaluated on the same test skills.
+    metric(y, scores) -> float.
+    Each resample draws benign and malicious skills separately (class sizes stay fixed)
+    and evaluates every model on the same resample, so differences between models are paired.
+    Returns {name: [point, low, high]} plus {"a-b": [...]} for every ordered pair a, b.
+    """
+    y = np.asarray(y)
+    scores_by_model = {k: np.asarray(v) for k, v in scores_by_model.items()}
+    rng = np.random.default_rng(seed)
+    idx0, idx1 = np.flatnonzero(y == 0), np.flatnonzero(y == 1)
+    names = list(scores_by_model)
+    boots = {k: np.empty(n_boot) for k in names}
+    for b in range(n_boot):
+        idx = np.concatenate([rng.choice(idx0, len(idx0)), rng.choice(idx1, len(idx1))])
+        for k in names:
+            boots[k][b] = metric(y[idx], scores_by_model[k][idx])
+    lo, hi = 100 * alpha / 2, 100 * (1 - alpha / 2)
+    out = {}
+    for k in names:
+        point = metric(y, scores_by_model[k])
+        out[k] = [round(point, 4), round(float(np.percentile(boots[k], lo)), 4),
+                  round(float(np.percentile(boots[k], hi)), 4)]
+    for a in names:
+        for b_ in names:
+            if a != b_:
+                d = boots[a] - boots[b_]
+                out[f"{a}-{b_}"] = [round(out[a][0] - out[b_][0], 4),
+                                    round(float(np.percentile(d, lo)), 4),
+                                    round(float(np.percentile(d, hi)), 4)]
+    return out
+
+
+def clopper_pearson(k, n, alpha=0.05):
+    """Exact binomial confidence interval for k successes out of n (for small groups, e.g. n=21)."""
+    from scipy.stats import beta
+
+    lo = 0.0 if k == 0 else float(beta.ppf(alpha / 2, k, n - k + 1))
+    hi = 1.0 if k == n else float(beta.ppf(1 - alpha / 2, k + 1, n - k))
+    return [round(k / n, 4), round(lo, 4), round(hi, 4)]
+
+
 def per_source(df, pred):
     """Per test source: benign skills wrongly flagged, malicious skills caught."""
     out = {}
