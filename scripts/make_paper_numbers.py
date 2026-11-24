@@ -105,7 +105,29 @@ def main() -> None:
         m["EvasionAsrAll"] = pct(ma["asr_benign_at_k"], 0)
         m["EvasionControlAll"] = pct(ma["asr_random_at_k"], 0)
         m["EvasionAsrMixed"] = pct(mm["asr_benign_at_k"], 0)
+        m["EvasionControlMixed"] = pct(mm["asr_random_at_k"], 0)
         m["EvasionGapAll"] = pct(ma["source_specific_gap"], 0)
+        m["EvasionBaseRecallAll"] = pct(ma["malicious_flagged"] / 839, 0)   # 839 = malicious test skills
+        m["EvasionBaseRecallMixed"] = pct(mm["malicious_flagged"] / 839, 0)
+
+    # Review fixes: the recall cost of the fix, transformer per-source, probe balanced accuracy.
+    if mech and "runs" in mech:
+        R = mech["runs"]
+        m["RecallAll"] = pct(R["all"]["default"]["malicious_recall"], 0)
+        m["RecallMixed"] = pct(R["mixed_only"]["default"]["malicious_recall"], 0)
+        m["RecallMixedDeploy"] = pct(R["mixed_only"]["val_2pct"]["malicious_recall"], 0)
+        m["RecallAt2All"] = pct(R["all"]["default"]["recall_at_2pct_fpr"], 0)
+        m["RecallAt2Mixed"] = pct(R["mixed_only"]["default"]["recall_at_2pct_fpr"], 0)
+    tall = load("transformer/modernbert_source_disjoint_all_s0.json")
+    tmix = load("transformer/modernbert_source_disjoint_mixed_only_s0.json")
+    if tall and tmix:
+        atr, sfb = "ATR Skill Security Benchmark", "SkillFortifyBench"
+        m["MbAtrAll"] = pct(tall["default_per_source"][atr]["benign_fpr"], 0)
+        m["MbSfbAll"] = pct(tall["default_per_source"][sfb]["benign_fpr"], 0)
+        m["MbAtrMixed"] = pct(tmix["default_per_source"][atr]["benign_fpr"], 0)
+        m["MbSfbMixed"] = pct(tmix["default_per_source"][sfb]["benign_fpr"], 0)
+    if probe:
+        m["ProbeBalAcc"] = pct(probe["source_id"]["balanced_accuracy"])
 
     ds = load("data_summary.json") or DATA_FALLBACK
     m["DataSkills"] = f"{ds['skills']:,}"
@@ -121,6 +143,9 @@ def main() -> None:
         "MixedSkillTrustBench", "MixedAgentTrap", "MixedSkillTrojan",
         "MechanismSentence", "TransformerSentence", "ConclusionMechanism",
         "EvasionK", "EvasionAsrAll", "EvasionControlAll", "EvasionAsrMixed", "EvasionGapAll",
+        "EvasionControlMixed", "EvasionBaseRecallAll", "EvasionBaseRecallMixed",
+        "RecallAll", "RecallMixed", "RecallMixedDeploy", "RecallAt2All", "RecallAt2Mixed",
+        "MbAtrAll", "MbSfbAll", "MbAtrMixed", "MbSfbMixed", "ProbeBalAcc",
     ]
     pending = [n for n in needed if n not in m]
     for n in needed:
@@ -149,7 +174,8 @@ def mechanism_sentence(mech):
     else:
         all_fpr = mech["runs"]["all"]["default"]["benign_fpr"]
         verdict = (f"breaking the pairs raises the benign false-positive rate only to {pct(bp_fpr, 0)}, "
-                   f"modestly above the {pct(sm_fpr, 0)} of a size-matched control and far below the "
+                   f"modestly above the {pct(sm_fpr, 0)} of a size-matched mixed-only control (both over three "
+                   f"seeds) and far below the "
                    f"{pct(all_fpr, 0)} of all-data, so label mixing within a source drives most of the "
                    f"gain while the pairing adds a little")
     return (f"In these sources {share} of malicious skills are injected copies of a benign skill; "
@@ -177,7 +203,7 @@ def transformer_sentence(cmp):
         return "\\PENDING"
     return (f"A fine-tuned ModernBERT shows the same pattern: trained on all data it flags {pct(mb_all[0], 0)} "
             f"of unseen-source benign skills, and trained on mixed-label sources only {pct(mb_mix[0], 0)}, "
-            f"so the shortcut is a property of the data, not of the linear model class.")
+            f"so the over-blocking is not merely an artifact of the linear model.")
 
 
 if __name__ == "__main__":

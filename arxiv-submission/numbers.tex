@@ -20,11 +20,24 @@
 \newcommand{\MixedSkillTrustBench}{3973}
 \newcommand{\MixedAgentTrap}{116}
 \newcommand{\MixedSkillTrojan}{3}
-\newcommand{\MechanismSentence}{In these sources 83\% of malicious skills are injected copies of a benign skill; breaking the pairs raises the benign false-positive rate only to 10\%, modestly above the 6\% of a size-matched control and far below the 65\% of all-data, so label mixing within a source drives most of the gain while the pairing adds a little.}
-\newcommand{\TransformerSentence}{A fine-tuned ModernBERT shows the same pattern: trained on all data it flags 79\% of unseen-source benign skills, and trained on mixed-label sources only 20\%, so the shortcut is a property of the data, not of the linear model class.}
+\newcommand{\MechanismSentence}{In these sources 83\% of malicious skills are injected copies of a benign skill; breaking the pairs raises the benign false-positive rate only to 10\%, modestly above the 6\% of a size-matched mixed-only control (both over three seeds) and far below the 65\% of all-data, so label mixing within a source drives most of the gain while the pairing adds a little.}
+\newcommand{\TransformerSentence}{A fine-tuned ModernBERT shows the same pattern: trained on all data it flags 79\% of unseen-source benign skills, and trained on mixed-label sources only 20\%, so the over-blocking is not merely an artifact of the linear model.}
 \newcommand{\ConclusionMechanism}{On this benchmark the gain survives breaking the benign--malicious pairs, so it rests on label mixing within a source rather than on paired construction.}
 \newcommand{\EvasionK}{8}
 \newcommand{\EvasionAsrAll}{17\%}
 \newcommand{\EvasionControlAll}{5\%}
 \newcommand{\EvasionAsrMixed}{7\%}
 \newcommand{\EvasionGapAll}{12\%}
+\newcommand{\EvasionControlMixed}{1\%}
+\newcommand{\EvasionBaseRecallAll}{40\%}
+\newcommand{\EvasionBaseRecallMixed}{20\%}
+\newcommand{\RecallAll}{96\%}
+\newcommand{\RecallMixed}{50\%}
+\newcommand{\RecallMixedDeploy}{20\%}
+\newcommand{\RecallAt2All}{8\%}
+\newcommand{\RecallAt2Mixed}{46\%}
+\newcommand{\MbAtrAll}{75\%}
+\newcommand{\MbSfbAll}{100\%}
+\newcommand{\MbAtrMixed}{4\%}
+\newcommand{\MbSfbMixed}{100\%}
+\newcommand{\ProbeBalAcc}{76.0\%}

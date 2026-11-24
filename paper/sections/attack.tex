@@ -17,6 +17,12 @@ The mixed-only model of \S\ref{sec:fix} is more robust here too: the same \Evasi
 succeeds on only \EvasionAsrMixed{} of the skills it catches. Because it no longer leans on source
 style, the training-set-composition fix that lowers the benign false-positive rate also shrinks the
 evasion surface. One bias thus produces both failures --- over-blocking benign skills and letting
-malicious ones evade --- and one data fix moves both. This concerns the cheap static pre-install
-filter, and is orthogonal to evasions that hide the payload from an LLM
-judge~\cite{pretext2026,cloakdetonate2026}.
+malicious ones evade --- and one data fix moves both.
+
+We state two honesty notes. The success rates are over each model's \emph{caught} malicious skills, and
+the two models catch different amounts before any attack (at its threshold the all-data model flags
+\EvasionBaseRecallAll{} of malicious test skills, the mixed-only model only \EvasionBaseRecallMixed{}), so
+the mixed-only model's lower attack rate partly reflects its lower base recall; its source-specific gap
+is \EvasionAsrMixed{} benign vs \EvasionControlMixed{} random. The effect sizes are modest: this is a
+mechanism demonstration, not a strong attack. It concerns the cheap static pre-install filter, and is
+orthogonal to evasions that hide the payload from an LLM judge~\cite{pretext2026,cloakdetonate2026}.

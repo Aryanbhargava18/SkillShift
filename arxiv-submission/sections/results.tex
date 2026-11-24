@@ -2,9 +2,10 @@
 \label{sec:shortcut}
 \textbf{Source is predictable from text.} We train a word TF-IDF + logistic regression classifier to
 predict a skill's \emph{source benchmark} (not its label) and evaluate it with held-out skills. It
-reaches \ProbeAcc{} accuracy over \ProbeSources{} sources (chance $1/\ProbeSources{}$). Since most
-sources carry a single label, a malicious/benign classifier can score well by recognising the source
-and never learning what makes a skill dangerous.
+reaches \ProbeAcc{} accuracy\,---\,\ProbeBalAcc{} balanced across classes\,---\,over the \ProbeSources{}
+of the benchmark's 13 sources that appear in this split (chance $1/\ProbeSources{}$ per source). Since
+most sources carry a single label, a malicious/benign classifier can score well by recognising the
+source and never learning what makes a skill dangerous.
 
 \textbf{A concrete shortcut feature.} The token \texttt{openclaw}, platform boilerplate from skills
 published for the OpenClaw agent, is one of the strongest ``benign'' cues an all-data model learns.
@@ -26,19 +27,27 @@ SkillTrustBench (\MixedSkillTrustBench{} skills, against \MixedAgentTrap{} from 
 \S\ref{sec:mechanism} asks what about that source makes it work.
 
 \begin{table}[t]
-\caption{Word TF-IDF + logistic regression on the unseen-source test set, default $0.5$ threshold.}
+\caption{Word TF-IDF + logistic regression on the unseen-source test set. Benign FPR and malicious
+recall are at the default $0.5$ threshold; R@2\%FPR is the oracle recall at a 2\% false-positive budget.}
 \label{tab:fix}
 \centering
-\begin{tabular}{lcc}
+\begin{tabular}{lcccc}
 \toprule
-training data & benign FPR & PR-AUC \\
+training data & benign FPR & mal.\ recall & PR-AUC & R@2\%FPR \\
 \midrule
-all sources & \FprAll{} & \PrAll{} \\
-size-matched random control & \FprSizeMatched{} & -- \\
-mixed-label sources only & \FprMixed{} & \PrMixed{} \\
+all sources & \FprAll{} & \RecallAll{} & \PrAll{} & \RecallAt2All{} \\
+size-matched all-data control & \FprSizeMatched{} & -- & -- & -- \\
+mixed-label sources only & \FprMixed{} & \RecallMixed{} & \PrMixed{} & \RecallAt2Mixed{} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\textbf{The fix is a ranking improvement, not a free win.} At the default $0.5$ threshold the mixed-only
+model catches \RecallMixed{} of malicious skills, down from \RecallAll{}, and at the deployable
+validation-set threshold only \RecallMixedDeploy{}. What improves is the ranking: PR-AUC rises
+\PrAll{}$\to$\PrMixed{} and recall at a 2\% false-alarm budget rises \RecallAt2All{}$\to$\RecallAt2Mixed{}, so
+at any fixed low false-alarm rate the fixed model catches far more. We report the fix as an operating-point
+and ranking shift, not a strict win.
 
 \textbf{It is not simply ``less data''.} Mixed-only training uses far fewer skills than all-data. A
 control that draws a random subset of all-data of the same size and label balance still flags
@@ -78,5 +87,10 @@ ModernBERT-base (one seed per training set) on both training sets and score it o
 unseen-source test skills, comparing every model with a paired, class-stratified bootstrap.
 \TransformerSentence{} Per-source rates on the small benign test groups (ATR, SkillFortifyBench) are
 reported with exact Clopper-Pearson intervals, since ATR contributes only \TestAtrBenign{} of the
-\TestBenign{} benign test skills. Quantising the deployed mixed-only model to int8 for the released
-ONNX scanner changes 2.2\% of test verdicts, acceptable for a cheap pre-install filter.
+\TestBenign{} benign test skills. The aggregate hides a per-source split: the mixed-only ModernBERT
+reaches \MbAtrMixed{} FPR on ATR but \MbSfbMixed{} on SkillFortifyBench (the all-data model is
+\MbAtrAll{} and \MbSfbAll{}), where benign and malicious skills differ by a single command. On that
+source the data fix does not help the transformer, while the word-LR reaches 0\%\,---\,so here the
+model class does matter, and the ``not an artifact of the linear model'' claim holds only on ATR. The
+released int8 ONNX scanner is this mixed-only ModernBERT (benign FPR \MbAtrMixed{} on ATR, 20\%
+aggregate; int8 changes 2.2\% of verdicts); the lower-FPR detector is the word-LR.

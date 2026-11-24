@@ -27,8 +27,10 @@ wrongly flag about two thirds of benign skills from sources they have not seen. 
 A TF-IDF probe names a skill's source benchmark from its text with \ProbeAcc{} accuracy over
 \ProbeSources{} sources, and platform boilerplate such as \texttt{openclaw} acts as a ``benign'' cue only
 because of how the benchmark's sources were mixed. Training only on sources that contain both labels cuts the
-benign false-positive rate on unseen sources from \FprAll{} to \FprMixed{} (95\% CI \FprMixedCI{}) and raises
-PR-AUC from \PrAll{} to \PrMixed{}, while a size-matched random control stays at \FprSizeMatched{}.
+benign false-positive rate on unseen sources from \FprAll{} to \FprMixed{} (95\% CI \FprMixedCI{}); this trades
+malicious recall at a fixed threshold (\RecallAll{} to \RecallMixed{}) but improves ranking, raising PR-AUC
+from \PrAll{} to \PrMixed{} and recall at a 2\% false-positive budget from \RecallAt2All{} to \RecallAt2Mixed{}.
+A size-matched all-data control stays at \FprSizeMatched{}.
 We then ask what this fix actually learns. Almost all of that training data is one source built from
 minimal pairs: a benign skill and a copy with an injected payload. \MechanismSentence{}
 \TransformerSentence{} The same shortcut is an attack surface: appending \EvasionK{} benign
@@ -117,6 +119,14 @@ MaliciousSkillBench~\cite{msb2026} reports the source-disjoint gap, a class-bala
 sanitization control, and SkillScreen~\cite{skillscreen2026} reports transformer results and threshold
 non-transfer on the same split. Neither tests source predictability, source-composition interventions, or
 the role of minimal pairs.
+
+We are explicit about what is and is not new. That merging sources creates a label shortcut, and that
+per-source both-class data is the remedy, is Arp et al.~\cite{arp2022}; we do not claim either. Our
+contribution is the empirical decomposition in the agent-skill domain: the source-identity probe, the
+minimal-pair versus label-mixing ablation, the dose-response that locates MalSkillBench as the culprit,
+and the attack$\leftrightarrow$false-positive symmetry. It is also a sharper intervention than the
+benchmark's own control: MaliciousSkillBench's class balancing lowers the word model's benign FPR only to
+about 43\%~\cite{msb2026}, against our \FprMixed{} from source selection.
 
 \input{sections/discussion}
 
