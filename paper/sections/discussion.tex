@@ -1,0 +1,36 @@
+\section{Threats to validity}
+\label{sec:threats}
+\textbf{One benchmark, one split.} All results use MaliciousSkillBench's frozen \texttt{source\_disjoint}
+split. The unseen benign test set has only \TestBenign{} skills from two sources (ATR and SkillFortifyBench),
+and ATR contributes \TestAtrBenign{} of them, so benign FPR is largely an ATR number. A full
+leave-one-source-out evaluation would show how much the conclusions depend on which sources are held out.
+
+\textbf{``Mixed-only'' is effectively one source.} SkillTrojan contributes \MixedSkillTrojan{} skills and
+AgentTrap \MixedAgentTrap{}; SkillTrustBench contributes the other \MixedSkillTrustBench{}. Our fix is therefore
+best described as ``train on SkillTrustBench'', and its success may depend on how that source was built
+(\S\ref{sec:mechanism}).
+
+\textbf{Construction artifacts.} Inside SkillTrustBench most malicious skills are injected variants of benign
+skills, and the held-out malicious sources are also injected or backdoored. A detector that learns ``find the
+injected span'' may do well here and still miss malicious skills that were written from scratch.
+
+\textbf{Thresholds.} Validation data comes from the training sources, so thresholds tuned on it do not
+transfer to unseen sources (\S\ref{sec:fix}), as also reported for this benchmark by
+SkillScreen~\cite{skillscreen2026}. Numbers labelled ``oracle'' pick the threshold on the test set and are
+upper bounds.
+
+\textbf{Prevalence.} The benchmark is 77\% malicious; real registries are mostly benign. Precision at
+realistic prevalence would be much lower than the precision implied here, which is why we report FPR rather
+than accuracy.
+
+\textbf{Compute.} ModernBERT was fine-tuned once per training set (seed 0) on a laptop GPU, on the first 512
+tokens only. Transformer results are a single run, not a distribution over seeds.
+
+\section{Conclusion}
+\label{sec:conclusion}
+Malicious-skill detectors trained on merged benchmarks learn where a skill came from. Training only where both
+labels share a source removes most of the resulting false positives, and a size-matched control rules out the
+``less data'' explanation. \ConclusionMechanism{} For benchmark builders this suggests two concrete practices:
+report benign FPR on unseen sources with the threshold fixed before looking at the test set, and document how
+malicious and benign examples within each source were constructed, so that users can tell whether a detector
+learned what makes a skill dangerous or how the benchmark was assembled.

@@ -1,0 +1,22 @@
+\section{The shortcut is also an attack surface, and the fix helps here too}
+\label{sec:attack}
+The source shortcut does not only make detectors over-block benign skills from unseen sources; it lets
+an attacker evade them. Appending benign source-style tokens to a malicious skill is a good-word
+attack~\cite{lowd2005}; the honest question is whether the \emph{source-style} tokens help beyond the
+dilution that appending any text causes to a TF-IDF vector. We answer with a dose-response: at each
+size $k$ we append the all-data detector's top-$k$ benign-weighted features, and as a control $k$
+random vocabulary tokens, to every malicious test skill the detector catches at its deployment
+threshold.
+
+At every $k$ the source-style tokens evade far more than random ones. With only \EvasionK{} injected
+tokens, \EvasionAsrAll{} of caught malicious skills fall below threshold, against \EvasionControlAll{}
+for the same number of random tokens --- a source-specific gap of \EvasionGapAll{} that padding does
+not explain. The attack changes no payload and queries no model.
+
+The mixed-only model of \S\ref{sec:fix} is more robust here too: the same \EvasionK{}-token attack
+succeeds on only \EvasionAsrMixed{} of the skills it catches. Because it no longer leans on source
+style, the training-set-composition fix that lowers the benign false-positive rate also shrinks the
+evasion surface. One bias thus produces both failures --- over-blocking benign skills and letting
+malicious ones evade --- and one data fix moves both. This concerns the cheap static pre-install
+filter, and is orthogonal to evasions that hide the payload from an LLM
+judge~\cite{pretext2026,cloakdetonate2026}.
