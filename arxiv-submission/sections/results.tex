@@ -1,0 +1,77 @@
+\section{The shortcut}
+\label{sec:shortcut}
+\textbf{Source is predictable from text.} We train a word TF-IDF + logistic regression classifier to
+predict a skill's \emph{source benchmark} (not its label) and evaluate it with held-out skills. It
+reaches \ProbeAcc{} accuracy over \ProbeSources{} sources (chance $1/\ProbeSources{}$). Since most
+sources carry a single label, a malicious/benign classifier can score well by recognising the source
+and never learning what makes a skill dangerous.
+
+\textbf{A concrete shortcut feature.} The token \texttt{openclaw}, platform boilerplate from skills
+published for the OpenClaw agent, is one of the strongest ``benign'' cues an all-data model learns.
+Yet inside the one source that contains both labels at scale (SkillTrustBench) it appears about
+equally in benign and malicious skills, so it carries no signal about maliciousness. It looks benign
+only because benign training data is dominated by sources where the token is common, while the
+largest malicious source rarely uses it. The cue is an artifact of how the benchmark's sources were
+mixed, exactly the mechanism of \cite{arp2022,torralba2011}.
+
+\section{Training where both labels share a source}
+\label{sec:fix}
+If a source contains only one label it can teach only style; if it contains both, style cannot
+separate the labels inside it, so the model must use content. We therefore train only on the sources
+that contain both labels. On the unseen-source test set this cuts the benign false-positive rate from
+\FprAll{} to \FprMixed{} (95\% CI \FprMixedCI{}) and raises PR-AUC from \PrAll{} to \PrMixed{}
+(Table~\ref{tab:fix}).
+
+\begin{table}[t]
+\caption{Word TF-IDF + logistic regression on the unseen-source test set, default $0.5$ threshold.}
+\label{tab:fix}
+\centering
+\begin{tabular}{lcc}
+\toprule
+training data & benign FPR & PR-AUC \\
+\midrule
+all sources & \FprAll{} & \PrAll{} \\
+size-matched random control & \FprSizeMatched{} & -- \\
+mixed-label sources only & \FprMixed{} & \PrMixed{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{It is not simply ``less data''.} Mixed-only training uses far fewer skills than all-data. A
+control that draws a random subset of all-data of the same size and label balance still flags
+\FprSizeMatched{} of unseen-source benign skills, so the gain comes from \emph{which} data, not how
+much. Re-weighting every (source, label) group equally does not help either: the style signal is
+still present, only reweighted.
+
+\textbf{Thresholds do not transfer.} A threshold tuned to flag 2\% of \emph{validation} benign skills
+(validation comes from the training sources) flags far more on the unseen test sources, so any number
+reported ``at $k\%$ FPR'' must say where the threshold was set. We report both an oracle operating
+point (threshold on the test set, an upper bound) and the deployable one (threshold on validation).
+
+\section{What the fix learns}
+\label{sec:mechanism}
+Mixed-only training is dominated by one source, SkillTrustBench (\MixedSkillTrustBench{} of the
+mixed-label training skills; AgentTrap contributes \MixedAgentTrap{} and SkillTrojan
+\MixedSkillTrojan{}), and that source builds most malicious skills by injecting a payload into a real
+benign skill. So the fix could work for two different reasons: label mixing within a source, or the
+presence of minimal pairs (a benign skill and a near-copy carrying a payload). We separate them.
+
+\MechanismSentence{}
+
+\textbf{Which sources bring the false positives back.} Adding one single-label source at a time to
+the mixed-only training set locates the data responsible for the collapse: the largest single-label
+malicious sources restore the high benign false-positive rate, while small ones do not. This shows
+the failure is driven by the single-label malicious bulk, not by a lack of benign coverage alone.
+
+\textbf{Masking the obvious token is not enough.} Removing the \texttt{openclaw} token, or stripping
+the YAML frontmatter, from all-data training does not close the gap: the model falls back on the many
+other style cues that distinguish the sources. The shortcut is distributed across the text, so
+editing one feature cannot fix an all-data model; changing the training composition can.
+
+\section{Fine-tuned transformer}
+\label{sec:transformer}
+To check that the shortcut is a property of the data and not of linear models, we fine-tune
+ModernBERT-base on both training sets and score it on the same unseen-source test skills, comparing
+every model with a paired, class-stratified bootstrap. \TransformerSentence{} Per-source rates on the
+small benign test groups (ATR, SkillFortifyBench) are reported with exact Clopper-Pearson intervals,
+since ATR contributes only \TestAtrBenign{} of the \TestBenign{} benign test skills.

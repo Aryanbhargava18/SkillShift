@@ -1,0 +1,126 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xspace}
+
+% Every number in this paper is generated from results/*.json by scripts/make_paper_numbers.py.
+\input{numbers}
+
+\begin{document}
+
+\title{Source Shortcuts in Malicious Agent-Skill Detection:\\
+Why Detectors Fail on Unseen Sources, and What the Fix Really Learns}
+
+\author{\IEEEauthorblockN{Aryan Bhargava}
+\IEEEauthorblockA{Newton School of Technology, Rishihood University\\
+\url{https://github.com/Aryanbhargava18/SkillShift}}}
+
+\maketitle
+
+\begin{abstract}
+Agent skills (\texttt{SKILL.md} files) extend LLM agents with instructions and scripts, and malicious skills are an
+emerging supply-chain threat. On MaliciousSkillBench, text classifiers that look strong on a random split
+wrongly flag about two thirds of benign skills from sources they have not seen. We show why and test a fix.
+A TF-IDF probe names a skill's source benchmark from its text with \ProbeAcc{} accuracy over
+\ProbeSources{} sources, and platform boilerplate such as \texttt{openclaw} acts as a ``benign'' cue only
+because of how the benchmark's sources were mixed. Training only on sources that contain both labels cuts the
+benign false-positive rate on unseen sources from \FprAll{} to \FprMixed{} (95\% CI \FprMixedCI{}) and raises
+PR-AUC from \PrAll{} to \PrMixed{}, while a size-matched random control stays at \FprSizeMatched{}.
+We then ask what this fix actually learns. Almost all of that training data is one source built from
+minimal pairs: a benign skill and a copy with an injected payload. \MechanismSentence{}
+\TransformerSentence{} The same shortcut is an attack surface: appending \EvasionK{} benign
+source-style tokens evades \EvasionAsrAll{} of caught malicious skills, against \EvasionControlAll{}
+for random tokens, and the fix lowers this to \EvasionAsrMixed{}.
+We release code, per-skill scores, and an ONNX scanner, and argue that
+skill-detection benchmarks should report unseen-source false-positive rates with the threshold fixed in
+advance, and should state how their malicious and benign examples were constructed.
+\end{abstract}
+
+\section{Introduction}
+Agent frameworks now load third-party \emph{skills}: a \texttt{SKILL.md} file with YAML frontmatter, natural
+language instructions, and optional helper scripts that the agent may run. A malicious skill can exfiltrate
+credentials, run a downloaded binary, or quietly redirect the agent. Static detectors that read the skill
+before installation are an obvious first line of defense, and MaliciousSkillBench~\cite{msb2026} collects
+\DataSkills{} labeled skills from 13 source benchmarks to evaluate them.
+
+The benchmark's own results show the problem we study. A word TF-IDF + SVM model reaches macro-F1
+\RandomSvmFone{} when train and test are drawn from the same mix, but \SourceSvmFone{} when the test skills
+come from sources never seen in training, where it flags \SourceSvmFpr{} of benign skills. A detector that
+blocks two thirds of legitimate skills is not deployable. The benchmark paper reports this gap and attributes
+it to ``unfamiliar benign source conventions'' but does not isolate a mechanism~\cite{msb2026}, and
+SkillScreen~\cite{skillscreen2026} reports similar unseen-source false-positive rates for fine-tuned
+transformers.
+
+The phenomenon itself is well known: when sources differ in their label mix, models learn to recognise the
+source instead of the label~\cite{torralba2011,gururangan2018,geirhos2020,zech2018,compton2023}, and the same
+failure has been documented for malware detection~\cite{arp2022} and malicious-prompt
+classifiers~\cite{fomin2026}. Our contribution is not the gap but its diagnosis and a tested remedy in the
+agent-skill domain:
+\begin{itemize}
+\item We reproduce the published baselines and show that a skill's source is predictable from its text
+(\S\ref{sec:shortcut}), and trace a concrete shortcut feature, \texttt{openclaw}, to how sources were mixed.
+\item We show that training only on mixed-label sources removes most unseen-source false positives, and that a
+size-matched control does not (\S\ref{sec:fix}).
+\item We test \emph{why} the fix works: whether it depends on the benchmark's minimal-pair construction,
+which single-label sources bring the false positives back, and whether simply masking the shortcut token is
+enough (\S\ref{sec:mechanism}).
+\item We fine-tune ModernBERT on both training sets and compare it with the TF-IDF models on the same test
+skills with paired bootstrap intervals (\S\ref{sec:transformer}), and ship the result as an int8 ONNX scanner.
+\item We show the same shortcut is an \emph{attack surface}: a good-word attack~\cite{lowd2005} using
+source-style tokens evades the detector well beyond a random-token control, and the mixed-only fix
+shrinks the evasion surface as it shrinks the false-positive rate (\S\ref{sec:attack}).
+\end{itemize}
+
+\section{Data and evaluation}
+\label{sec:data}
+\textbf{Dataset.} MaliciousSkillBench~\cite{msb2026} (CC-BY-4.0) contains \DataSkills{} skills:
+\DataMalicious{} malicious and \DataBenign{} benign. Most of its 13 sources contain one label only.
+We use the frozen \texttt{source\_disjoint} split: the test set is SkillHarm (728 malicious), ATR (455 benign,
+21 malicious) and SkillFortifyBench (90/90), none of which appear in training. Nearly all benign training
+skills come from a single source, SkillTrustBench.
+
+\textbf{Metrics.} The positive class is malicious. Our main number is the \emph{benign false-positive rate}
+(FPR) on unseen-source test skills, the share of legitimate skills a detector would block. We also report
+malicious recall, macro-F1 and PR-AUC. Recall at a fixed FPR is computed two ways: with the threshold picked
+on the test set (an upper bound, labelled ``oracle''), and with the threshold picked on validation, which
+comes from the training sources (the deployable setting). Confidence intervals are 95\% paired,
+class-stratified bootstrap intervals with 2,000 resamples; per-source rates on small groups use exact
+Clopper-Pearson intervals.
+
+\textbf{Models.} Word TF-IDF (1--2 grams) with logistic regression or a linear SVM, character TF-IDF (3--5
+grams), a keyword baseline, and ModernBERT-base~\cite{modernbert2024} fine-tuned on the first 512 tokens
+(AdamW, learning rate $3\cdot10^{-5}$, 2 epochs, effective batch 16, class-weighted loss).
+
+\input{sections/results}
+
+\input{sections/attack}
+
+\section{Related work}
+\textbf{Dataset bias and shortcuts.} ``Name that dataset'' experiments show sources are easy to identify from
+their content~\cite{torralba2011,liu2025decade}; annotation artifacts let NLI models answer from the hypothesis
+alone~\cite{gururangan2018}; and a pneumonia detector learned the hospital rather than the
+disease~\cite{zech2018}. Adding a source with a different label rate can hurt for the same
+reason~\cite{compton2023}. Group reweighting and Group DRO~\cite{sagawa2020} and group-balanced
+subsampling~\cite{idrissi2022} target this setting; our mixed-only training is a form of group-balanced data
+selection restricted to sources where both labels exist. Counterfactually augmented data~\cite{kaushik2020},
+pairs of examples that differ only in the label-relevant edit, is closely related to the minimal pairs we
+find in SkillTrustBench.
+
+\textbf{Security.} Arp et al.~\cite{arp2022} report a near-identical artifact in Android malware detection,
+where a store URL became a top ``benign'' feature, and recommend per-source datasets that contain both
+classes. Fomin~\cite{fomin2026} shows, for malicious-prompt classifiers, that source identity is predictable
+from text and that thresholds do not transfer across held-out datasets. In the skill domain,
+MaliciousSkillBench~\cite{msb2026} reports the source-disjoint gap, a class-balancing control and a scaffold
+sanitization control, and SkillScreen~\cite{skillscreen2026} reports transformer results and threshold
+non-transfer on the same split. Neither tests source predictability, source-composition interventions, or
+the role of minimal pairs.
+
+\input{sections/discussion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

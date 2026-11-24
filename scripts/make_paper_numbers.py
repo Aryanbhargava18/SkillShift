@@ -66,9 +66,6 @@ def main() -> None:
         m["FprMixed"] = pct(mix_r["benign_fpr"])
         m["PrAll"] = f"{all_r['pr_auc']:.2f}"
         m["PrMixed"] = f"{mix_r['pr_auc']:.2f}"
-        sm = mech.get("size_matched_mixed_mean")
-        if sm:
-            m["FprSizeMatched"] = pct(sm["benign_fpr"], 0)
         ci = mech.get("bootstrap", {}).get("benign_fpr_at_0.5", {}).get("mixed_only")
         if ci:
             m["FprMixedCI"] = f"[{pct(ci[1])}, {pct(ci[2])}]"
@@ -86,6 +83,14 @@ def main() -> None:
         m["PrMixed"] = f"{rob['mixed_only/word_lr']['default']['pr_auc']:.2f}"
         sms = [rob[f"size_matched_s{i}/word_lr"]["default"]["benign_fpr"] for i in range(3)
                if f"size_matched_s{i}/word_lr" in rob]
+        if sms:
+            m["FprSizeMatched"] = pct(sum(sms) / len(sms), 0)
+
+    # FprSizeMatched is the "not less data" control: a random subset of ALL data, size-matched to
+    # mixed-only (step 4 / robust_classical). It is NOT the break-pairs control in mechanism.json.
+    if rob:
+        sms = [rob[f"size_matched_s{i}/word_lr"]["default"]["benign_fpr"]
+               for i in range(3) if f"size_matched_s{i}/word_lr" in rob]
         if sms:
             m["FprSizeMatched"] = pct(sum(sms) / len(sms), 0)
 
