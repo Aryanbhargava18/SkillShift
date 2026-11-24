@@ -36,6 +36,9 @@ minimal pairs: a benign skill and a copy with an injected payload. \MechanismSen
 \TransformerSentence{} The same shortcut is an attack surface: appending \EvasionK{} benign
 source-style tokens evades \EvasionAsrAll{} of caught malicious skills, against \EvasionControlAll{}
 for random tokens, and the fix lowers this to \EvasionAsrMixed{}.
+On \WildN{} real \texttt{SKILL.md} files from public GitHub, the merged-data detector flags
+\WildFlaggedAll{} as malicious and the fixed one \WildFlaggedMixed{}, so the over-blocking is a
+deployment problem, not a benchmark artifact.
 We release code, per-skill scores, and an ONNX scanner, and argue that
 skill-detection benchmarks should report unseen-source false-positive rates with the threshold fixed in
 advance, and should state how their malicious and benign examples were constructed.
@@ -74,6 +77,8 @@ skills with paired bootstrap intervals (\S\ref{sec:transformer}), and ship the r
 \item We show the same shortcut is an \emph{attack surface}: a good-word attack~\cite{lowd2005} using
 source-style tokens evades the detector well beyond a random-token control, and the mixed-only fix
 shrinks the evasion surface as it shrinks the false-positive rate (\S\ref{sec:attack}).
+\item We confirm the effect on real data: on \WildN{} public GitHub skills the merged-data detector
+flags \WildFlaggedAll{} as malicious and the fixed one \WildFlaggedMixed{} (\S\ref{sec:wild}).
 \end{itemize}
 
 \section{Data and evaluation}

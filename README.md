@@ -2,7 +2,7 @@
 
 **Can a text classifier detect malicious agent skills (`SKILL.md`) from sources it has never seen — or does it just learn to recognise the source?**
 
-On [MaliciousSkillBench](https://huggingface.co/datasets/ProtectSkills/MaliciousSkillBench), detectors that look strong on a random split wrongly flag **two-thirds of benign skills from sources they were not trained on**. This repo shows *why*, shows a fix, and shows the same bias is an attack surface. Full writeup: [paper/skillshift.pdf](paper/skillshift.pdf). Working notes: [NOTES.md](NOTES.md).
+On [MaliciousSkillBench](https://huggingface.co/datasets/ProtectSkills/MaliciousSkillBench), detectors that look strong on a random split wrongly flag **two-thirds of benign skills from sources they were not trained on**. This repo shows *why*, shows a fix, and shows the same bias is an attack surface. On **400 real GitHub skills**, the merged-data detector flags **30%** as malicious while the fix flags **5%**. Full writeup: [paper/skillshift.pdf](paper/skillshift.pdf). Working notes: [NOTES.md](NOTES.md).
 
 ## Findings
 

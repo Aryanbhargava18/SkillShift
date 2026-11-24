@@ -94,3 +94,16 @@ source the data fix does not help the transformer, while the word-LR reaches 0\%
 model class does matter, and the ``not an artifact of the linear model'' claim holds only on ATR. The
 released int8 ONNX scanner is this mixed-only ModernBERT (benign FPR \MbAtrMixed{} on ATR, 20\%
 aggregate; int8 changes 2.2\% of verdicts); the lower-FPR detector is the word-LR.
+
+\section{A real-world check}
+\label{sec:wild}
+The benchmark's unseen benign sources are few and curated. As an external check we collected \WildN{}
+real \texttt{SKILL.md} files from public GitHub repositories\,---\,unlabeled, but overwhelmingly benign
+published skills, and \WildOpenclaw{} of them contain the \texttt{openclaw} token, confirming the
+shortcut feature is common in the wild. The all-data detector flags \WildFlaggedAll{} of these real
+skills as malicious at the default threshold; the mixed-only detector flags \WildFlaggedMixed{}. On
+real-world data the source-composition fix reduces over-blocking by the same large factor it does on the
+benchmark, turning the diagnosis into a deployment estimate: a detector trained on the merged benchmark
+would block roughly a third of real GitHub skills, and the fix cuts that severalfold. These files are
+unlabeled, so this measures over-blocking of presumed-benign skills, not a calibrated false-positive
+rate.

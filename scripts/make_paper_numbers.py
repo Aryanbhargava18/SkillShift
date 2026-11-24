@@ -129,6 +129,13 @@ def main() -> None:
     if probe:
         m["ProbeBalAcc"] = pct(probe["source_id"]["balanced_accuracy"])
 
+    ga = load("github_audit.json")
+    if ga:
+        m["WildN"] = str(ga["n_wild"])
+        m["WildFlaggedAll"] = pct(ga["models"]["all"]["flagged_at_0.5"], 0)
+        m["WildFlaggedMixed"] = pct(ga["models"]["mixed_only"]["flagged_at_0.5"], 0)
+        m["WildOpenclaw"] = pct(ga["wild_with_openclaw"] / ga["n_wild"], 0)
+
     ds = load("data_summary.json") or DATA_FALLBACK
     m["DataSkills"] = f"{ds['skills']:,}"
     m["DataMalicious"] = f"{ds['malicious']:,}"
@@ -146,6 +153,7 @@ def main() -> None:
         "EvasionControlMixed", "EvasionBaseRecallAll", "EvasionBaseRecallMixed",
         "RecallAll", "RecallMixed", "RecallMixedDeploy", "RecallAtTwoAll", "RecallAtTwoMixed",
         "MbAtrAll", "MbSfbAll", "MbAtrMixed", "MbSfbMixed", "ProbeBalAcc",
+        "WildN", "WildFlaggedAll", "WildFlaggedMixed", "WildOpenclaw",
     ]
     pending = [n for n in needed if n not in m]
     for n in needed:

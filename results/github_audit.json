@@ -1,0 +1,16 @@
+{
+  "n_wild": 400,
+  "wild_with_openclaw": 127,
+  "models": {
+    "all": {
+      "flagged_at_0.5": 0.297,
+      "flagged_at_deploy_threshold": 0.062,
+      "median_malicious_score": 0.368
+    },
+    "mixed_only": {
+      "flagged_at_0.5": 0.05,
+      "flagged_at_deploy_threshold": 0.01,
+      "median_malicious_score": 0.251
+    }
+  }
+}
