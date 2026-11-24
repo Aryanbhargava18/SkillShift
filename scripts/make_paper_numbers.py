@@ -1,4 +1,4 @@
-"""Generate paper/numbers.tex: every \newcommand macro the paper uses, from results/*.json.
+r"""Generate paper/numbers.tex: every \newcommand macro the paper uses, from results/*.json.
 
 Run: uv run python scripts/make_paper_numbers.py
 No number in paper/*.tex is typed by hand; they all resolve to macros defined here.
