@@ -116,8 +116,8 @@ def main() -> None:
         m["RecallAll"] = pct(R["all"]["default"]["malicious_recall"], 0)
         m["RecallMixed"] = pct(R["mixed_only"]["default"]["malicious_recall"], 0)
         m["RecallMixedDeploy"] = pct(R["mixed_only"]["val_2pct"]["malicious_recall"], 0)
-        m["RecallAt2All"] = pct(R["all"]["default"]["recall_at_2pct_fpr"], 0)
-        m["RecallAt2Mixed"] = pct(R["mixed_only"]["default"]["recall_at_2pct_fpr"], 0)
+        m["RecallAtTwoAll"] = pct(R["all"]["default"]["recall_at_2pct_fpr"], 0)
+        m["RecallAtTwoMixed"] = pct(R["mixed_only"]["default"]["recall_at_2pct_fpr"], 0)
     tall = load("transformer/modernbert_source_disjoint_all_s0.json")
     tmix = load("transformer/modernbert_source_disjoint_mixed_only_s0.json")
     if tall and tmix:
@@ -144,7 +144,7 @@ def main() -> None:
         "MechanismSentence", "TransformerSentence", "ConclusionMechanism",
         "EvasionK", "EvasionAsrAll", "EvasionControlAll", "EvasionAsrMixed", "EvasionGapAll",
         "EvasionControlMixed", "EvasionBaseRecallAll", "EvasionBaseRecallMixed",
-        "RecallAll", "RecallMixed", "RecallMixedDeploy", "RecallAt2All", "RecallAt2Mixed",
+        "RecallAll", "RecallMixed", "RecallMixedDeploy", "RecallAtTwoAll", "RecallAtTwoMixed",
         "MbAtrAll", "MbSfbAll", "MbAtrMixed", "MbSfbMixed", "ProbeBalAcc",
     ]
     pending = [n for n in needed if n not in m]

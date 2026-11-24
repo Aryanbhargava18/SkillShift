@@ -35,9 +35,9 @@ recall are at the default $0.5$ threshold; R@2\%FPR is the oracle recall at a 2\
 \toprule
 training data & benign FPR & mal.\ recall & PR-AUC & R@2\%FPR \\
 \midrule
-all sources & \FprAll{} & \RecallAll{} & \PrAll{} & \RecallAt2All{} \\
+all sources & \FprAll{} & \RecallAll{} & \PrAll{} & \RecallAtTwoAll{} \\
 size-matched all-data control & \FprSizeMatched{} & -- & -- & -- \\
-mixed-label sources only & \FprMixed{} & \RecallMixed{} & \PrMixed{} & \RecallAt2Mixed{} \\
+mixed-label sources only & \FprMixed{} & \RecallMixed{} & \PrMixed{} & \RecallAtTwoMixed{} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -45,7 +45,7 @@ mixed-label sources only & \FprMixed{} & \RecallMixed{} & \PrMixed{} & \RecallAt
 \textbf{The fix is a ranking improvement, not a free win.} At the default $0.5$ threshold the mixed-only
 model catches \RecallMixed{} of malicious skills, down from \RecallAll{}, and at the deployable
 validation-set threshold only \RecallMixedDeploy{}. What improves is the ranking: PR-AUC rises
-\PrAll{}$\to$\PrMixed{} and recall at a 2\% false-alarm budget rises \RecallAt2All{}$\to$\RecallAt2Mixed{}, so
+\PrAll{}$\to$\PrMixed{} and recall at a 2\% false-alarm budget rises \RecallAtTwoAll{}$\to$\RecallAtTwoMixed{}, so
 at any fixed low false-alarm rate the fixed model catches far more. We report the fix as an operating-point
 and ranking shift, not a strict win.
 

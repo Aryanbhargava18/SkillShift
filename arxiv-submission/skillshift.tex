@@ -29,7 +29,7 @@ A TF-IDF probe names a skill's source benchmark from its text with \ProbeAcc{} a
 because of how the benchmark's sources were mixed. Training only on sources that contain both labels cuts the
 benign false-positive rate on unseen sources from \FprAll{} to \FprMixed{} (95\% CI \FprMixedCI{}); this trades
 malicious recall at a fixed threshold (\RecallAll{} to \RecallMixed{}) but improves ranking, raising PR-AUC
-from \PrAll{} to \PrMixed{} and recall at a 2\% false-positive budget from \RecallAt2All{} to \RecallAt2Mixed{}.
+from \PrAll{} to \PrMixed{} and recall at a 2\% false-positive budget from \RecallAtTwoAll{} to \RecallAtTwoMixed{}.
 A size-matched all-data control stays at \FprSizeMatched{}.
 We then ask what this fix actually learns. Almost all of that training data is one source built from
 minimal pairs: a benign skill and a copy with an injected payload. \MechanismSentence{}
