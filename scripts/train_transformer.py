@@ -88,6 +88,8 @@ def main() -> None:
     ap.add_argument("--accum", type=int, default=8)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--limit", type=int, default=0, help="debug: use only N training skills")
+    ap.add_argument("--grad-ckpt", action="store_true",
+                    help="recompute activations in the backward pass: much less memory, ~30%% slower, same result")
     args = ap.parse_args()
 
     run = f"modernbert_{args.protocol}_{args.variant}_s{args.seed}"
@@ -105,6 +107,8 @@ def main() -> None:
 
     tok = AutoTokenizer.from_pretrained(MODEL)
     model = AutoModelForSequenceClassification.from_pretrained(MODEL, num_labels=2).to(device)
+    if args.grad_ckpt:
+        model.gradient_checkpointing_enable()
 
     # Class weights: inverse frequency, so each class contributes equally to the loss.
     counts = np.bincount(train.label, minlength=2)
