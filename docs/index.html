@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>The Source Shortcut</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+  /* Layout: single editorial column, ~68ch measure, a full-bleed chart band, left-aligned throughout. */
+  :root{
+    --bg:#fbfbfa; --panel:#f3f3f1; --fg:#17181b; --muted:#5d6066; --line:#e2e2de;
+    --accent:#1f5fd6;      /* the fix / mixed-only */
+    --danger:#c0392b;      /* all-data / over-block */
+    --display:"Space Grotesk",system-ui,sans-serif;
+    --body:"Inter",system-ui,-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#111317; --panel:#1a1d22; --fg:#eceef1; --muted:#9aa0a8; --line:#2a2e35;
+    --accent:#6ea0ff; --danger:#e3685a; color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#111317; --panel:#1a1d22; --fg:#eceef1; --muted:#9aa0a8; --line:#2a2e35;
+    --accent:#6ea0ff; --danger:#e3685a; color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6;
+    -webkit-font-smoothing:antialiased;font-size:17px}
+  .wrap{max-width:720px;margin:0 auto;
+    padding-left:max(20px,env(safe-area-inset-left,0px));
+    padding-right:max(20px,env(safe-area-inset-right,0px));
+    padding-block:0}
+  main{display:flex;flex-direction:column;gap:1.3rem}
+  h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+  h1{font-size:clamp(2rem,6vw,3.1rem);font-weight:700;letter-spacing:-.02em}
+  h2{font-size:clamp(1.3rem,3.6vw,1.7rem);font-weight:600;margin-top:1.4rem;letter-spacing:-.01em}
+  p{margin:0}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+  a:hover{border-bottom-color:var(--accent)}
+  .eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;
+    font-size:.72rem;font-weight:600;color:var(--accent)}
+  header.hero{padding-top:calc(env(safe-area-inset-top,0px) + 3.2rem);padding-bottom:.4rem;
+    display:flex;flex-direction:column;gap:1rem}
+  .dek{font-size:1.18rem;color:var(--muted);max-width:60ch}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem 1.1rem;align-items:center;font-size:.9rem;
+    color:var(--muted);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding-block:.8rem;margin-top:.3rem}
+  .meta .who{color:var(--fg);font-weight:600}
+  .lede{font-size:1.16rem}
+  .lede strong{font-weight:600}
+  figure{margin:.6rem 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:1.2rem 1rem .9rem;display:flex;flex-direction:column;gap:.5rem;min-width:0}
+  figure svg{width:100%;height:auto;display:block}
+  figcaption{font-size:.86rem;color:var(--muted);line-height:1.5}
+  .legend{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.84rem;color:var(--muted);align-items:center}
+  .legend span{display:inline-flex;align-items:center;gap:.4rem}
+  .swatch{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .chart text{font-family:var(--body)}
+  .axis{fill:var(--muted);font-size:12px}
+  .grid{stroke:var(--line);stroke-width:1}
+  .zero{stroke:var(--muted);stroke-width:1}
+  .bar-all{fill:var(--danger)}
+  .bar-fix{fill:var(--accent)}
+  .vlabel{fill:var(--fg);font-size:12.5px;font-weight:600;font-family:var(--display)}
+  .glabel{fill:var(--fg);font-size:13px;font-weight:600;font-family:var(--display)}
+  .gsub{fill:var(--muted);font-size:11px}
+  .pull{border-left:3px solid var(--accent);padding:.1rem 0 .1rem 1rem;color:var(--fg);
+    font-family:var(--display);font-weight:500;font-size:1.15rem;line-height:1.35}
+  ul.takeaways{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.7rem}
+  ul.takeaways li{padding-left:1.4rem;position:relative}
+  ul.takeaways li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;
+    border-radius:2px;background:var(--accent)}
+  .foot{margin-top:1.6rem;margin-bottom:3rem;border-top:1px solid var(--line);padding-top:1.1rem;
+    display:flex;flex-direction:column;gap:.6rem;font-size:.95rem;color:var(--muted)}
+  .links{display:flex;flex-wrap:wrap;gap:.6rem}
+  .links a{display:inline-block;padding:.45rem .8rem;border:1px solid var(--line);border-radius:8px;
+    color:var(--fg);font-weight:500;font-size:.9rem;background:var(--panel)}
+  .links a:hover{border-color:var(--accent)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
+    background:var(--panel);padding:.08em .35em;border-radius:4px}
+  .diagram{width:100%;height:auto;display:block}
+  .dg-box{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+  .dg-key,.dg-fix{fill:var(--panel);stroke:var(--accent);stroke-width:2.5}
+  .dg-bad{fill:var(--panel);stroke:var(--danger);stroke-width:2}
+  .dg-t{fill:var(--fg);font-family:var(--display);font-weight:600;font-size:13px}
+  .dg-s{fill:var(--muted);font-size:11px}
+  .dg-badt{fill:var(--danger);font-family:var(--display);font-weight:600;font-size:12.5px}
+  .dg-arrow{stroke:var(--muted);stroke-width:1.6;fill:none}
+  .dg-fixarrow{stroke:var(--accent);stroke-width:1.7;fill:none;stroke-dasharray:5 3}
+  .ah-m{fill:var(--muted)} .ahf-m{fill:var(--accent)}
+  @media (prefers-reduced-motion:no-preference){a,.links a{transition:border-color .15s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <span class="eyebrow">Agent-skill security · case study</span>
+    <h1>A detector that learned the benchmark, not the threat</h1>
+    <p class="dek">Text classifiers that flag malicious agent skills look strong on a random split and
+      fall apart on skills from sources they were not trained on. Here is why that happens, a fix that
+      mostly removes it, and the honest cost of the fix.</p>
+    <div class="meta">
+      <span class="who">Aryan Bhargava</span>
+      <span>November 2026</span>
+      <span>~8 min read</span>
+    </div>
+  </header>
+
+  <main>
+    <p class="lede">Agent frameworks now load third-party <em>skills</em>: a <code>SKILL.md</code> file
+      with instructions and helper scripts an agent may run. A malicious skill can exfiltrate credentials
+      or redirect the agent, so a static detector that reads the skill before it installs is an obvious
+      first defence. On <strong>MaliciousSkillBench</strong>, a public benchmark of 9,740 skills, a plain
+      TF-IDF classifier reaches a macro-F1 of 0.93 when training and test come from the same mix. The same
+      model, tested on sources it has never seen, flags <strong>two-thirds of benign skills as
+      malicious</strong>. A detector that blocks two in three legitimate skills is not deployable.</p>
+
+    <h2>The model recognises the source, not the danger</h2>
+    <p>The benchmark merges 13 source datasets, and most of them carry a single label: one source is all
+      malicious, another is almost all benign. When sources differ that way, a classifier can score well by
+      answering an easier question than the one it was given. Instead of learning what makes a skill
+      dangerous, it learns which dataset a skill came from.</p>
+    <p>That is measurable. A probe trained only to name a skill's <em>source</em> from its text reaches
+      91.7% accuracy across ten sources, where chance is 10%. One token makes the mechanism concrete:
+      <code>openclaw</code>, boilerplate from skills written for one agent platform, is among the strongest
+      "benign" cues the detector learns. It carries no information about whether a skill is dangerous. It
+      looks benign only because the benign training data happens to be full of it and the malicious data is
+      not. This is a textbook dataset-bias artifact, the same failure Arp et al. documented for Android
+      malware detection in 2022, where a store URL became a top benign feature. The contribution here is not
+      the phenomenon. It is pinning down the mechanism in this domain and testing a remedy.</p>
+
+    <h2>Train only where both labels share a source</h2>
+    <p>If a source contains one label, it can only teach style. If it contains both, style cannot separate
+      the labels inside it, so the model has to use content. So the fix is to drop every single-label source
+      and train only on the sources that carry both. On the unseen-source test set this cuts the benign
+      false-positive rate from 65% to 3.7% for the linear model. A control rules out the boring explanation:
+      a random subset of the full data, matched to the same size, still flags 58%, so the gain comes from
+      <em>which</em> data, not from using less of it.</p>
+
+    <figure>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--danger)"></span>trained on all sources</span>
+        <span><span class="swatch" style="background:var(--accent)"></span>trained on both-label sources only</span>
+      </div>
+      <svg class="chart" viewBox="0 0 560 300" role="img"
+           aria-label="Benign false-positive rate on unseen sources, by model. Word TF-IDF plus logistic regression drops from 65 percent to 3.7 percent; ModernBERT from 79 to 20 percent; Qwen 0.5B QLoRA from 80 to 1.8 percent.">
+        <!-- gridlines + y labels at 0,20,40,60,80,100 -->
+        <line class="grid" x1="54" y1="30"  x2="548" y2="30"></line>
+        <line class="grid" x1="54" y1="74"  x2="548" y2="74"></line>
+        <line class="grid" x1="54" y1="118" x2="548" y2="118"></line>
+        <line class="grid" x1="54" y1="162" x2="548" y2="162"></line>
+        <line class="grid" x1="54" y1="206" x2="548" y2="206"></line>
+        <line class="zero" x1="54" y1="250" x2="548" y2="250"></line>
+        <text class="axis" x="48" y="34"  text-anchor="end">100%</text>
+        <text class="axis" x="48" y="78"  text-anchor="end">80</text>
+        <text class="axis" x="48" y="122" text-anchor="end">60</text>
+        <text class="axis" x="48" y="166" text-anchor="end">40</text>
+        <text class="axis" x="48" y="210" text-anchor="end">20</text>
+        <text class="axis" x="48" y="254" text-anchor="end">0</text>
+
+        <!-- Group 1: word TF-IDF + LR  (all 65 -> y=107 h=143 ; mix 3.7 -> y=241.9 h=8.1) -->
+        <rect class="bar-all" x="108" y="107"   width="40" height="143"></rect>
+        <rect class="bar-fix" x="152" y="241.9" width="40" height="8.1"></rect>
+        <text class="vlabel" x="128" y="99"  text-anchor="middle">65%</text>
+        <text class="vlabel" x="172" y="234" text-anchor="middle">3.7%</text>
+        <text class="glabel" x="150" y="270" text-anchor="middle">word TF-IDF + LR</text>
+        <text class="gsub"   x="150" y="285" text-anchor="middle">linear</text>
+
+        <!-- Group 2: ModernBERT (all 79 -> y=76.2 h=173.8 ; mix 20 -> y=206 h=44) -->
+        <rect class="bar-all" x="268" y="76.2" width="40" height="173.8"></rect>
+        <rect class="bar-fix" x="312" y="206"  width="40" height="44"></rect>
+        <text class="vlabel" x="288" y="68"  text-anchor="middle">79%</text>
+        <text class="vlabel" x="332" y="198" text-anchor="middle">20%</text>
+        <text class="glabel" x="310" y="270" text-anchor="middle">ModernBERT</text>
+        <text class="gsub"   x="310" y="285" text-anchor="middle">encoder</text>
+
+        <!-- Group 3: Qwen QLoRA (all 80 -> y=74 h=176 ; mix 1.8 -> y=246 h=4) -->
+        <rect class="bar-all" x="428" y="74"  width="40" height="176"></rect>
+        <rect class="bar-fix" x="472" y="246" width="40" height="4"></rect>
+        <text class="vlabel" x="448" y="66"  text-anchor="middle">80%</text>
+        <text class="vlabel" x="492" y="238" text-anchor="middle">1.8%</text>
+        <text class="glabel" x="470" y="270" text-anchor="middle">Qwen2.5-0.5B</text>
+        <text class="gsub"   x="470" y="285" text-anchor="middle">QLoRA decoder</text>
+      </svg>
+      <figcaption>Benign false-positive rate on sources held out of training. The over-block appears in a
+        linear model, a fine-tuned encoder, and a 4-bit QLoRA decoder, so it is a property of the data, not
+        of one architecture. Intervals (95% bootstrap) are tight: the linear model's 3.7% sits in
+        [2.2, 5.3].</figcaption>
+    </figure>
+
+    <h2>The fix is real, and it is not free</h2>
+    <p>Lowering false alarms costs recall at a fixed threshold: the linear model catches 96% of malicious
+      skills before the fix and 50% after. What improves is ranking. The area under the precision-recall
+      curve rises from 0.79 to 0.93, and at a 2% false-alarm budget recall rises from 8% to 46%, so at any
+      fixed low false-alarm rate the fixed model catches far more. A simple linear model with the right data
+      out-ranks a fine-tuned transformer with the wrong data.</p>
+    <p class="pull">The over-block reproduces across three model classes. The ranking gain reproduces on the
+      two fully-trained models and not on a single-epoch 0.5B decoder, so the line that matters is training
+      budget, not model size.</p>
+
+    <h2>The same shortcut is a way in</h2>
+    <p>A feature that over-blocks benign skills is also a feature an attacker can borrow. Appending eight of
+      the detector's own benign source-style tokens to a malicious skill pushes it below threshold 17% of
+      the time, against 5% for the same number of random tokens. The payload does not change and the attacker
+      never queries the model. The data fix narrows this to 7% as it narrows the false-positive rate: one
+      bias produces both failures, and one data choice moves both.</p>
+
+    <figure>
+      <svg class="diagram" viewBox="0 0 580 350" role="img"
+           aria-label="A merged benchmark whose sources mostly carry one label leads a detector to key on the source instead of the threat. That both over-blocks benign skills (65% false positives on unseen sources) and lets malicious skills evade by appending benign source-style tokens. Training only on both-label sources reduces both.">
+        <defs>
+          <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" class="ah-m"></path></marker>
+          <marker id="ahf" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" class="ahf-m"></path></marker>
+        </defs>
+        <rect class="dg-box" x="185" y="8" width="210" height="44" rx="10"></rect>
+        <text class="dg-t" x="290" y="28" text-anchor="middle">Merged benchmark</text>
+        <text class="dg-s" x="290" y="43" text-anchor="middle">13 sources, most carry one label</text>
+        <line class="dg-arrow" x1="290" y1="52" x2="290" y2="72" marker-end="url(#ah)"></line>
+        <rect class="dg-key" x="168" y="76" width="244" height="48" rx="10"></rect>
+        <text class="dg-t" x="290" y="96" text-anchor="middle">Detector keys on the SOURCE,</text>
+        <text class="dg-t" x="290" y="113" text-anchor="middle">not the threat</text>
+        <path class="dg-arrow" d="M250,124 C 205,150 175,165 150,180" marker-end="url(#ah)"></path>
+        <path class="dg-arrow" d="M330,124 C 375,150 405,165 430,180" marker-end="url(#ah)"></path>
+        <rect class="dg-bad" x="22" y="182" width="250" height="58" rx="10"></rect>
+        <text class="dg-badt" x="147" y="206" text-anchor="middle">Over-blocks benign skills</text>
+        <text class="dg-s" x="147" y="224" text-anchor="middle">65% false positives on unseen sources</text>
+        <rect class="dg-bad" x="308" y="182" width="250" height="58" rx="10"></rect>
+        <text class="dg-badt" x="433" y="206" text-anchor="middle">Lets malicious skills evade</text>
+        <text class="dg-s" x="433" y="224" text-anchor="middle">append benign source-style tokens</text>
+        <rect class="dg-fix" x="120" y="288" width="340" height="48" rx="10"></rect>
+        <text class="dg-t" x="290" y="308" text-anchor="middle">One data fix</text>
+        <text class="dg-s" x="290" y="325" text-anchor="middle">train only on sources that hold both labels &mdash; both shrink</text>
+        <path class="dg-fixarrow" d="M205,288 C 178,268 160,255 150,242" marker-end="url(#ahf)"></path>
+        <path class="dg-fixarrow" d="M375,288 C 402,268 420,255 430,242" marker-end="url(#ahf)"></path>
+      </svg>
+      <figcaption>One source-style shortcut, two failures: the detector over-blocks benign skills and lets
+        malicious ones evade. A single data choice &mdash; training only where both labels share a source
+        &mdash; moves both.</figcaption>
+    </figure>
+
+    <h2>It holds outside the benchmark</h2>
+    <p>Curated benign sources could be the whole story, so the last check uses 400 real <code>SKILL.md</code>
+      files from public GitHub, 32% of which contain the <code>openclaw</code> token. The all-data detector
+      flags 30% of them as malicious; the fixed one flags 5%. These files are unlabeled, so this measures the
+      over-block divergence in the wild rather than a calibrated error rate. The benchmark finding is not an
+      artifact of its curated sources.</p>
+
+    <h2>What a benchmark should report</h2>
+    <p>Two practices would have surfaced this earlier. Report the benign false-positive rate on unseen
+      sources with the threshold fixed before anyone looks at the test set, because a threshold tuned on
+      training-source validation does not transfer. And state how the malicious and benign examples in each
+      source were built, so a reader can tell whether a detector learned what makes a skill dangerous or
+      learned how the benchmark was assembled.</p>
+
+    <ul class="takeaways">
+      <li>Strong numbers on a random split can hide a model that solved an easier problem than the one you
+        care about. Test on held-out sources.</li>
+      <li>A source-composition choice beat a fine-tuned transformer here, and a control separated "right
+        data" from "less data."</li>
+      <li>The honest version of a result includes its cost. This one trades fixed-threshold recall and does
+        not transfer its ranking gain to an undertrained decoder.</li>
+    </ul>
+
+    <div class="foot">
+      <p>Code, per-skill scores, the paper, and an int8 ONNX scanner are open. Every number above is
+        generated from the result files, none typed by hand.</p>
+      <div class="links">
+        <a href="https://github.com/Aryanbhargava18/SkillShift" target="_blank" rel="noopener">GitHub repository</a>
+        <a href="https://github.com/Aryanbhargava18/SkillShift/blob/main/paper/skillshift.pdf" target="_blank" rel="noopener">Read the paper (PDF)</a>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
