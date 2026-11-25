@@ -46,7 +46,6 @@ demo = gr.Interface(
     description=("Two text detectors for malicious agent skills. On 400 unlabeled public GitHub skills the "
                  "all-data detector flags ~30% as malicious and the fixed one ~5%. Paste a SKILL.md to see "
                  "them differ. github.com/Aryanbhargava18/SkillShift"),
-    allow_flagging="never",
 )
 
 if __name__ == "__main__":
