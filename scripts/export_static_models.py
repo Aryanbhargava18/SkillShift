@@ -1,27 +1,34 @@
-import json, joblib, numpy as np, math
+"""Export the demo's two fitted detectors to demo/web/models.json for the static, client-side demo.
 
-M = joblib.load("demo/models.joblib")
+demo/web/index.html reimplements TfidfVectorizer(ngram_range=(1, 2), sublinear_tf=True, norm="l2") plus
+logistic regression in JavaScript. It needs only, per model, each vocabulary term's idf and coefficient
+and the intercept. Run after scripts/build_demo_models.py:
 
-def export(vec, model):
-    vocab = vec.vocabulary_                      # term -> col
-    idf = vec.idf_
-    coef = model.coef_[0]
-    inter = float(model.intercept_[0])
-    # term -> [idf, coef] (only terms in vocab matter; L2 norm is over present terms)
-    terms = {t: [round(float(idf[c]), 5), round(float(coef[c]), 6)] for t, c in vocab.items()}
-    params = dict(
-        lowercase=vec.lowercase, sublinear_tf=vec.sublinear_tf,
-        ngram_range=list(vec.ngram_range), norm=vec.norm,
-        token_pattern=vec.token_pattern,
-    )
-    return {"terms": terms, "intercept": inter, "params": params}
+    uv run python scripts/export_static_models.py
+"""
 
-out = {"all": export(*M["all"]), "mix": export(*M["mix"])}
-# sanity: vocab sizes + a reference score we can check JS against
-for k in ("all", "mix"):
-    print(k, "vocab:", len(out[k]["terms"]), "intercept:", out[k]["intercept"])
-print("params:", out["all"]["params"])
+import json
+from pathlib import Path
 
-json.dump(out, open("demo/web/models.json", "w"))
-import os
-print("json bytes:", os.path.getsize("demo/web/models.json"))
+import joblib
+
+SRC = Path("demo/models.joblib")
+DST = Path("demo/web/models.json")
+
+
+def export(vec, model) -> dict:
+    idf, coef = vec.idf_, model.coef_[0]
+    terms = {t: [round(float(idf[c]), 5), round(float(coef[c]), 6)] for t, c in vec.vocabulary_.items()}
+    return {"terms": terms, "intercept": float(model.intercept_[0])}
+
+
+def main() -> None:
+    models = joblib.load(SRC)
+    out = {name: export(*models[name]) for name in ("all", "mix")}
+    with DST.open("w") as f:
+        json.dump(out, f)
+    print(f"wrote {DST} ({DST.stat().st_size:,} bytes)")
+
+
+if __name__ == "__main__":
+    main()
