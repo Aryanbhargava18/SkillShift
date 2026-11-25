@@ -1,18 +1,14 @@
 """Interactive SkillShift demo (Hugging Face Spaces / Gradio).
 
-Paste a SKILL.md and see two detectors score it: one trained on the whole merged benchmark (which keys
-on source style and over-blocks) and one trained only on both-label sources (the fix). The gap between
-them is the shortcut this project is about.
+Paste a SKILL.md and two detectors score it: one trained on the whole merged benchmark (which keys on
+source style and over-blocks) and one trained only on both-label sources (the fix). The gap between them
+is the shortcut this project is about.
 
-The two word-TF-IDF + logistic-regression detectors are precomputed and shipped in models.joblib, so the
-app loads them instantly and the Space starts without a dataset download or any training. Regenerate the
-file with scripts/build_demo_models.py.
+Both detectors are word-TF-IDF + logistic regression, precomputed and shipped in models.joblib, so the
+Space starts instantly with no dataset download or training. Regenerate with scripts/build_demo_models.py.
 """
 
 import os
-os.environ.setdefault("GRADIO_SSR_MODE", "false")  # plain server, no SSR Node proxy (health-check safe)
-
-import time
 
 import gradio as gr
 import joblib
@@ -49,10 +45,4 @@ demo = gr.Interface(
 )
 
 if __name__ == "__main__":
-    try:
-        demo.launch(server_name="0.0.0.0", server_port=7860, ssr_mode=False)
-    except TypeError:
-        demo.launch(server_name="0.0.0.0", server_port=7860)
-    # Keep the process (and the web server thread) alive if launch() returns instead of blocking.
-    while True:
-        time.sleep(3600)
+    demo.launch()
