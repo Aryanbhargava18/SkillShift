@@ -77,6 +77,15 @@ B.~Warner, A.~Chaffin, B.~Clavi{\'e}, O.~Weller, O.~Hallstr{\"o}m,
   bidirectional encoder for fast, memory efficient, and long context finetuning
   and inference,'' 2024.
 
+\bibitem{qwen25}
+Q.~Team, ``Qwen2.5 technical report,'' \emph{arXiv preprint arXiv:2412.15115},
+  2024.
+
+\bibitem{dettmers2023}
+T.~Dettmers, A.~Pagnoni, A.~Holtzman, and L.~Zettlemoyer, ``{QLoRA}: Efficient
+  finetuning of quantized {LLMs},'' in \emph{Advances in Neural Information
+  Processing Systems (NeurIPS)}, 2023.
+
 \bibitem{pretext2026}
 T.~Kaisar and A.~Dhar, ``Pretext: Defeating malicious skill detection
   frameworks for ai agents,'' 2026, aIWild @ NeurIPS 2026.

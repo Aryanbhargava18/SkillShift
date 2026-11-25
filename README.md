@@ -23,8 +23,10 @@ On [MaliciousSkillBench](https://huggingface.co/datasets/ProtectSkills/Malicious
 | **word TF-IDF + LR, mixed-label sources only** | **3.7% [2.2–5.3]** | 50% | **0.93** |
 | ModernBERT-base, all data | 79% [76–82] | 98% | 0.66 |
 | ModernBERT-base, mixed-label sources only | 20% [17–23] | 53% | 0.79 |
+| Qwen2.5-0.5B QLoRA (decoder), all data | 80% [77–83] | 97% | 0.79 |
+| Qwen2.5-0.5B QLoRA (decoder), mixed-only | 1.8% [0.7–3.1] | 12% | 0.78 |
 
-The fix **trades malicious recall at a fixed threshold** for the FPR drop, but **improves ranking**: PR-AUC 0.79→0.93 and recall at a 2% false-alarm budget **8%→46%** — at any fixed low false-alarm rate the fixed model catches far more. A simple linear model with the right data out-ranks a fine-tuned transformer with the wrong data.
+The over-block **reproduces across all three model classes** — linear, encoder (ModernBERT), and a **4-bit QLoRA decoder LLM (Qwen2.5-0.5B)** — so it is not an artifact of any one architecture. The fix **trades malicious recall at a fixed threshold** for the FPR drop. For the word model and ModernBERT it also **improves ranking** (PR-AUC 0.79→0.93, recall at a 2% false-alarm budget **8%→46%** — at any fixed low false-alarm rate the fixed model catches far more; a simple linear model with the right data out-ranks a fine-tuned transformer with the wrong data). On the small, single-epoch decoder the ranking gain **does not** appear (PR-AUC 0.79 vs 0.78, tied) — there the fix is a pure FPR/recall operating-point trade, as expected for an undertrained 0.5B model.
 
 **2. The model learns the source, not the label.** A TF-IDF probe predicts a skill's *source benchmark* from its text at **91.7% accuracy** (76% balanced, chance 10%). Tokens like `openclaw` act as "benign" cues only because of how the benchmark's sources were mixed.
 

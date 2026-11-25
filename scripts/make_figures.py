@@ -20,16 +20,22 @@ def main() -> None:
     mech = load("mechanism.json")
     tr_all = load("transformer/modernbert_source_disjoint_all_s0.json")
     tr_mix = load("transformer/modernbert_source_disjoint_mixed_only_s0.json")
+    lora_all = load("transformer/lora_all.json")
+    lora_mix = load("transformer/lora_mixed_only.json")
     ev = load("adv_evasion.json")
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 3.4))
 
     # Left: benign FPR by model and training set (the headline)
-    models = ["word TF-IDF\n+ LR", "ModernBERT"]
+    models = ["word TF-IDF\n+ LR", "ModernBERT\n(encoder)"]
     all_fpr = [mech["runs"]["all"]["default"]["benign_fpr"] * 100,
                tr_all["default"]["benign_fpr"] * 100]
     mix_fpr = [mech["runs"]["mixed_only"]["default"]["benign_fpr"] * 100,
                tr_mix["default"]["benign_fpr"] * 100]
+    if lora_all and lora_mix:
+        models.append("Qwen2.5-0.5B\nQLoRA (decoder)")
+        all_fpr.append(lora_all["default"]["benign_fpr"] * 100)
+        mix_fpr.append(lora_mix["default"]["benign_fpr"] * 100)
     x = range(len(models))
     ax1.bar([i - 0.2 for i in x], all_fpr, 0.4, label="all sources", color="#c0392b")
     ax1.bar([i + 0.2 for i in x], mix_fpr, 0.4, label="mixed-label only", color="#2980b9")

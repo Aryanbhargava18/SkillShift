@@ -1,0 +1,35 @@
+{
+  "run": "lora_qwen2505b_source_disjoint_mixed_only_s0",
+  "variant": "mixed_only",
+  "train_n": 4092,
+  "train_minutes": 43.1,
+  "default": {
+    "macro_f1": 0.398,
+    "benign_fpr": 0.018,
+    "malicious_recall": 0.118,
+    "pr_auc": 0.78,
+    "recall_at_2pct_fpr": 0.129
+  },
+  "val_2pct": {
+    "macro_f1": 0.399,
+    "benign_fpr": 0.018,
+    "malicious_recall": 0.119,
+    "pr_auc": 0.78,
+    "recall_at_2pct_fpr": 0.129
+  },
+  "per_source": {
+    "SkillHarm": {
+      "malicious_recall": 0.126
+    },
+    "SkillFortifyBench": {
+      "benign_fpr": 0.0,
+      "benign_n": 90,
+      "malicious_recall": 0.067
+    },
+    "ATR Skill Security Benchmark": {
+      "benign_fpr": 0.022,
+      "benign_n": 455,
+      "malicious_recall": 0.048
+    }
+  }
+}

@@ -73,8 +73,10 @@ size-matched control does not (\S\ref{sec:fix}).
 \item We test \emph{why} the fix works: whether it depends on the benchmark's minimal-pair construction,
 which single-label sources bring the false positives back, and whether simply masking the shortcut token is
 enough (\S\ref{sec:mechanism}).
-\item We fine-tune ModernBERT on both training sets and compare it with the TF-IDF models on the same test
-skills with paired bootstrap intervals (\S\ref{sec:transformer}), and ship the result as an int8 ONNX scanner.
+\item We fine-tune ModernBERT and, as a decoder-LLM check, a QLoRA Qwen2.5-0.5B on both training sets and
+compare them with the TF-IDF models on the same test skills with paired bootstrap intervals
+(\S\ref{sec:transformer}); the unseen-source over-block holds across all three model classes, and we ship
+the result as an int8 ONNX scanner.
 \item We show the same shortcut is an \emph{attack surface}: a good-word attack~\cite{lowd2005} using
 source-style tokens evades the detector well beyond a random-token control, and the mixed-only fix
 shrinks the evasion surface as it shrinks the false-positive rate (\S\ref{sec:attack}).
@@ -100,7 +102,9 @@ Clopper-Pearson intervals.
 
 \textbf{Models.} Word TF-IDF (1--2 grams) with logistic regression or a linear SVM, character TF-IDF (3--5
 grams), a keyword baseline, and ModernBERT-base~\cite{modernbert2024} fine-tuned on the first 512 tokens
-(AdamW, learning rate $3\cdot10^{-5}$, 2 epochs, effective batch 16, class-weighted loss).
+(AdamW, learning rate $3\cdot10^{-5}$, 2 epochs, effective batch 16, class-weighted loss). As a
+decoder-LLM robustness check we also fine-tune Qwen2.5-0.5B~\cite{qwen25} with 4-bit
+QLoRA~\cite{dettmers2023} (rank 16, one epoch).
 
 \input{sections/results}
 

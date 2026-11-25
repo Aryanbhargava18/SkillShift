@@ -104,6 +104,10 @@ model class does matter, and the ``not an artifact of the linear model'' claim h
 released int8 ONNX scanner is this mixed-only ModernBERT (benign FPR \MbAtrMixed{} on ATR, 20\%
 aggregate; int8 changes 2.2\% of verdicts); the lower-FPR detector is the word-LR.
 
+\textbf{A decoder LLM.} \DecoderSentence{} The false-positive effect thus holds across all three model
+classes we test, while the ranking improvement appears only in the models with enough capacity and
+training to exploit it.
+
 \section{A real-world check}
 \label{sec:wild}
 The benchmark's unseen benign sources are few and curated. As an external check we collected \WildN{}

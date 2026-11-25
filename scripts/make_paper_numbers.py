@@ -97,6 +97,19 @@ def main() -> None:
     cmp = load("compare_models.json")
     if cmp:
         m["TransformerSentence"] = transformer_sentence(cmp)
+    # Decoder-LLM robustness check: QLoRA Qwen2.5-0.5B, same split, same eval.
+    lora_all = load("transformer/lora_all.json")
+    lora_mix = load("transformer/lora_mixed_only.json")
+    if cmp and lora_all and lora_mix and "lora_all" in cmp.get("benign_fpr_at_0.5", {}):
+        f, pr = cmp["benign_fpr_at_0.5"], cmp["pr_auc"]
+        m["LoraFprAll"] = pct(f["lora_all"][0], 0)
+        m["LoraFprMixed"] = pct(f["lora_mixed_only"][0])
+        m["LoraFprMixedCI"] = f"[{pct(f['lora_mixed_only'][1])}, {pct(f['lora_mixed_only'][2])}]"
+        m["LoraPrAll"] = f"{pr['lora_all'][0]:.2f}"
+        m["LoraPrMixed"] = f"{pr['lora_mixed_only'][0]:.2f}"
+        m["LoraRecallAll"] = pct(lora_all["default"]["malicious_recall"], 0)
+        m["LoraRecallMixed"] = pct(lora_mix["default"]["malicious_recall"], 0)
+        m["DecoderSentence"] = decoder_sentence(m)
 
     ev = load("adv_evasion.json")
     if ev:
@@ -148,7 +161,9 @@ def main() -> None:
         "RandomSvmFone", "SourceSvmFone", "SourceSvmFpr", "ProbeAcc", "ProbeSources",
         "FprAll", "FprMixed", "FprMixedCI", "PrAll", "PrMixed", "FprSizeMatched",
         "MixedSkillTrustBench", "MixedAgentTrap", "MixedSkillTrojan",
-        "MechanismSentence", "TransformerSentence", "ConclusionMechanism",
+        "MechanismSentence", "TransformerSentence", "DecoderSentence", "ConclusionMechanism",
+        "LoraFprAll", "LoraFprMixed", "LoraFprMixedCI", "LoraPrAll", "LoraPrMixed",
+        "LoraRecallAll", "LoraRecallMixed",
         "EvasionK", "EvasionAsrAll", "EvasionControlAll", "EvasionAsrMixed", "EvasionGapAll",
         "EvasionControlMixed", "EvasionBaseRecallAll", "EvasionBaseRecallMixed",
         "RecallAll", "RecallMixed", "RecallMixedDeploy", "RecallAtTwoAll", "RecallAtTwoMixed",
@@ -212,6 +227,17 @@ def transformer_sentence(cmp):
     return (f"A fine-tuned ModernBERT shows the same pattern: trained on all data it flags {pct(mb_all[0], 0)} "
             f"of unseen-source benign skills, and trained on mixed-label sources only {pct(mb_mix[0], 0)}, "
             f"so the over-blocking is not merely an artifact of the linear model.")
+
+
+def decoder_sentence(m):
+    return (f"A QLoRA-fine-tuned Qwen2.5-0.5B decoder (4-bit, one epoch) shows the same over-block: "
+            f"trained on all data it flags {m['LoraFprAll']} of unseen-source benign skills and on "
+            f"mixed-label sources only {m['LoraFprMixed']} (95\\% CI {m['LoraFprMixedCI']}), so the "
+            f"false-positive effect spans linear, encoder and decoder models. On this small decoder the "
+            f"fix is a pure false-positive/recall operating-point trade: malicious recall falls "
+            f"{m['LoraRecallAll']}$\\to${m['LoraRecallMixed']} and ranking is unchanged "
+            f"(PR-AUC {m['LoraPrAll']} vs {m['LoraPrMixed']}), so unlike the word model it buys no ranking "
+            f"gain, as expected for a 0.5B model fine-tuned for a single epoch.")
 
 
 if __name__ == "__main__":
