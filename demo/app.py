@@ -2,8 +2,11 @@
 
 Paste a SKILL.md and see two detectors score it: one trained on the whole merged benchmark (which keys
 on source style and over-blocks) and one trained only on both-label sources (the fix). The gap between
-them is the shortcut this project is about. The two word-TF-IDF + logistic-regression detectors are fit
-from MaliciousSkillBench on startup (a few seconds).
+them is the shortcut this project is about.
+
+The two word-TF-IDF + logistic-regression detectors are precomputed and shipped in models.joblib, so the
+app loads them instantly and the Space starts without a dataset download or any training. Regenerate the
+file with scripts/build_demo_models.py.
 """
 
 import os
@@ -12,33 +15,11 @@ os.environ.setdefault("GRADIO_SSR_MODE", "false")  # plain server, no SSR Node p
 import time
 
 import gradio as gr
-import pandas as pd
-from huggingface_hub import snapshot_download
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+import joblib
 
-MIXED = {"SkillTrustBench", "AgentTrap", "SkillTrojan"}
-
-
-def _fit(train):
-    vec = TfidfVectorizer(ngram_range=(1, 2), min_df=3, max_features=40_000, sublinear_tf=True)
-    model = LogisticRegression(max_iter=1000, class_weight="balanced", C=4.0)
-    model.fit(vec.fit_transform(train.text), train.label)
-    return vec, model
-
-
-print("fitting detectors...", flush=True)
-_d = snapshot_download("ProtectSkills/MaliciousSkillBench", repo_type="dataset", local_dir="msb")
-_p = pd.read_parquet(f"{_d}/primary.parquet")
-_p["text"] = _p.skill_text.fillna(_p.public_skill_text).fillna("")
-_sp = pd.read_parquet(f"{_d}/splits/source_disjoint.parquet")
-_df = _sp[["benchmark_id", "split"]].merge(
-    _p[["benchmark_id", "text", "label", "source_name"]], on="benchmark_id")
-_df["label"] = _df.label.astype(int)
-_train = _df[_df.split == "train"]
-VEC_ALL, M_ALL = _fit(_train)
-VEC_MIX, M_MIX = _fit(_train[_train.source_name.isin(MIXED)])
-print("ready.", flush=True)
+_M = joblib.load(os.path.join(os.path.dirname(__file__), "models.joblib"))
+VEC_ALL, M_ALL = _M["all"]
+VEC_MIX, M_MIX = _M["mix"]
 
 
 def score(text):
@@ -73,7 +54,6 @@ if __name__ == "__main__":
         demo.launch(server_name="0.0.0.0", server_port=7860, ssr_mode=False)
     except TypeError:
         demo.launch(server_name="0.0.0.0", server_port=7860)
-    # Some gradio/Spaces combinations return from launch() instead of blocking; keep the process
-    # (and therefore the web server thread) alive so the Space stays up.
+    # Keep the process (and the web server thread) alive if launch() returns instead of blocking.
     while True:
         time.sleep(3600)
