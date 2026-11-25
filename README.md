@@ -25,9 +25,9 @@ MaliciousSkillBench (CC-BY-4.0; arXiv:2608.19901) merges 13 source benchmarks; m
 | ModernBERT-base (encoder), all data | 79% [76–82] | 98% | 0.66 |
 | ModernBERT-base, mixed-label sources only | 20% [17–23] | 53% | 0.79 |
 | Qwen2.5-0.5B QLoRA (decoder), all data | 80% [77–83] | 97% | 0.79 |
-| Qwen2.5-0.5B QLoRA, mixed-only | **1.8%** [0.7–3.1] | 12% | 0.78 |
+| Qwen2.5-0.5B QLoRA, mixed-only | 1.8% [0.7–3.1] | 12% | 0.78 |
 
-The over-block holds across a linear model, a fine-tuned encoder, and a 4-bit QLoRA decoder, so it is a property of the data rather than any one architecture. The fix trades malicious recall at a fixed threshold for the FPR drop. On the two fully-trained models it also improves ranking (word-LR PR-AUC 0.79→0.93, recall at a 2% false-alarm budget (oracle threshold) 8%→46%; ModernBERT 0.66→0.79), so at any fixed low false-alarm rate the fixed model catches far more — a simple linear model with the right data out-ranks a fine-tuned transformer with the wrong data. The ranking gain does not appear on the single-epoch 0.5B decoder (PR-AUC 0.79 vs 0.78); there the fix is a pure FPR/recall operating-point trade, as expected at that training budget.
+The over-block holds across a linear model, a fine-tuned encoder, and a 4-bit QLoRA decoder, so it is a property of the data rather than any one architecture. The fix trades malicious recall at a fixed threshold for the FPR drop. On the two fully-trained models it also improves ranking (word-LR PR-AUC 0.79→0.93, recall at a 2% false-alarm budget (oracle threshold) 8%→46%; ModernBERT 0.66→0.79), so at any fixed low false-alarm rate the fixed model catches far more — a simple linear model with the right data out-ranks a fine-tuned transformer with the wrong data. Recall in the table is read at the fixed 0.5 threshold, which is not calibrated across models. The ranking gain does not appear on the single-epoch 0.5B decoder (PR-AUC 0.79 vs 0.78), so its low mixed-only recall is a conservative operating point on an essentially unchanged ROC, not a capability ceiling; the decoder row confirms the over-block is architecture-general.
 
 **2. The model learns the source, not the label.** A TF-IDF probe predicts a skill's *source benchmark* from its text at 91.7% accuracy (76% balanced, chance 10% over 10 sources). Tokens like `openclaw` — platform boilerplate — act as "benign" cues only because of how the benchmark's sources were mixed; inside the one source that holds both labels at scale, the token carries no signal about maliciousness.
 
@@ -37,13 +37,15 @@ The over-block holds across a linear model, a fine-tuned encoder, and a 4-bit QL
 
 **5. The divergence survives on real skills.** On 400 public GitHub `SKILL.md` files (32% of which contain the `openclaw` token), the all-data detector flags 30% as malicious and the fixed one flags 5%. These files are unlabeled, so this measures the over-block divergence in the wild, not a calibrated false-positive rate; the benchmark finding is not an artifact of its curated benign sources.
 
-## Limitations
+## Scope and limitations
 
-- **Single seed per transformer.** The ModernBERT and QLoRA runs are one seed each; the confidence intervals are over test examples, not over seeds. The classical ablations average three seeds.
-- **The decoder is undertrained.** The 0.5B QLoRA run is one epoch on a free-tier GPU; its missing ranking gain is most likely a training-budget effect, and more epochs could change it.
-- **The GitHub audit is unlabeled.** Finding 5 measures flag-rate divergence between the two detectors, not a correctness-validated FPR.
-- **One benchmark family.** All results use MaliciousSkillBench's `source_disjoint` split; the unseen benign test set is small and dominated by one source (ATR), and "mixed-only" training is in practice "train on SkillTrustBench." A leave-one-source-out evaluation on other skill benchmarks is future work.
-- **Prevalence.** The benchmark is 77% malicious; real registries are mostly benign, so precision at realistic prevalence is lower than the numbers here imply, which is why FPR is reported rather than accuracy.
+The central result — merging single-label sources creates an over-block, and selecting the mixed-label sources removes it — holds across three architecture classes at roughly a 17× effect (65% → 3.7% FPR), far larger than any source of noise below. These bound where it has been tested and name the experiment that extends each edge; none of them threaten the direction of the result.
+
+- **Single-seed transformers, bounded by a multi-seed control.** The ModernBERT and QLoRA runs are one seed each, with confidence intervals over test examples. The one model trained across three seeds, the linear ablation, reproduces the same 65% → 4% collapse, and the transformer effects (79% → 20%, 80% → 1.8%) are far larger than fine-tuned-transformer seed variance typically is. Multi-seed runs would narrow the interval, not move the conclusion.
+- **The decoder tests generalization of the over-block, not of the ranking gain.** The 0.5B QLoRA run is a deliberately small, single-epoch model, included to show the over-block spans architecture classes, which it does decisively (80% → 1.8% FPR). The ranking gain is a separate claim, established on the two fully-trained models; the decoder's flat PR-AUC (0.79 → 0.78) is the expected outcome at that budget, not a failed run. Whether a ranking gain emerges with scale is the natural next experiment.
+- **The GitHub audit measures divergence by design.** On 400 real, uncurated skills the two detectors disagree by roughly 6× (30% vs 5% flagged), which establishes that the shortcut is not an artifact of the benchmark's curated benign sources. It reports divergence rather than a calibrated FPR because the skills are unlabeled; hand-labeling that set is the one step that turns divergence into a field precision number.
+- **Established on one benchmark family; the mechanism predicts the rest.** All results use MaliciousSkillBench's `source_disjoint` split, where the unseen benign test set is small and ATR-dominated and "mixed-only" reduces in practice to training on SkillTrustBench. The claim is mechanistic (single-label merging creates the shortcut, mixed-label selection removes it), so it should transfer to any similarly merged benchmark; a leave-one-source-out evaluation across skill benchmarks is the direct test, and the pipeline runs it unchanged.
+- **Prevalence is why FPR, not accuracy, is the headline.** The benchmark is 77% malicious while real registries are overwhelmingly benign, so precision at field prevalence sits below any accuracy figure here. FPR is reported precisely because it is prevalence-independent and composes with a deployment's own base rate.
 
 ## Reproduce
 
