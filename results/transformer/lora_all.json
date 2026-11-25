@@ -1,5 +1,28 @@
 {
   "run": "lora_qwen2505b_source_disjoint_all_s0",
+  "args": {
+    "model": "Qwen/Qwen2.5-0.5B",
+    "method": "qlora_4bit",
+    "epochs": 1,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj"
+    ],
+    "bnb_4bit_quant_type": "nf4",
+    "compute_dtype": "bfloat16",
+    "max_len": 512,
+    "batch": 8,
+    "grad_accum": 16,
+    "lr": 0.0001,
+    "seed": 0,
+    "hardware": "kaggle T4",
+    "threshold": "val 2% FPR; per-source at 0.5"
+  },
   "variant": "all",
   "train_n": 7513,
   "train_minutes": 76.3,

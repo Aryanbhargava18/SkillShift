@@ -139,6 +139,8 @@ def main() -> None:
         m["MbSfbAll"] = pct(tall["default_per_source"][sfb]["benign_fpr"], 0)
         m["MbAtrMixed"] = pct(tmix["default_per_source"][atr]["benign_fpr"], 0)
         m["MbSfbMixed"] = pct(tmix["default_per_source"][sfb]["benign_fpr"], 0)
+        m["MbPrAll"] = f"{tall['default']['pr_auc']:.2f}"
+        m["MbPrMixed"] = f"{tmix['default']['pr_auc']:.2f}"
     if probe:
         m["ProbeBalAcc"] = pct(probe["source_id"]["balanced_accuracy"])
 
@@ -167,7 +169,7 @@ def main() -> None:
         "EvasionK", "EvasionAsrAll", "EvasionControlAll", "EvasionAsrMixed", "EvasionGapAll",
         "EvasionControlMixed", "EvasionBaseRecallAll", "EvasionBaseRecallMixed",
         "RecallAll", "RecallMixed", "RecallMixedDeploy", "RecallAtTwoAll", "RecallAtTwoMixed",
-        "MbAtrAll", "MbSfbAll", "MbAtrMixed", "MbSfbMixed", "ProbeBalAcc",
+        "MbAtrAll", "MbSfbAll", "MbAtrMixed", "MbSfbMixed", "MbPrAll", "MbPrMixed", "ProbeBalAcc",
         "WildN", "WildFlaggedAll", "WildFlaggedMixed", "WildOpenclaw",
     ]
     pending = [n for n in needed if n not in m]
@@ -236,8 +238,9 @@ def decoder_sentence(m):
             f"false-positive effect spans linear, encoder and decoder models. On this small decoder the "
             f"fix is a pure false-positive/recall operating-point trade: malicious recall falls "
             f"{m['LoraRecallAll']}$\\to${m['LoraRecallMixed']} and ranking is unchanged "
-            f"(PR-AUC {m['LoraPrAll']} vs {m['LoraPrMixed']}), so unlike the word model it buys no ranking "
-            f"gain, as expected for a 0.5B model fine-tuned for a single epoch.")
+            f"(PR-AUC {m['LoraPrAll']} vs {m['LoraPrMixed']}), so unlike the fully-trained word-LR and "
+            f"ModernBERT models it shows no ranking gain, as expected for a 0.5B model fine-tuned for a "
+            f"single epoch.")
 
 
 if __name__ == "__main__":

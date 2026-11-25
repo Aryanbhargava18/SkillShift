@@ -49,7 +49,7 @@ def score(text):
     va = "MALICIOUS" if pa >= 0.5 else "benign"
     vm = "MALICIOUS" if pm >= 0.5 else "benign"
     note = ("\n\n_The two detectors disagree — the all-data detector is reacting to source **style**, "
-            "not content. That is the shortcut this project diagnoses and fixes._"
+            "not content. That is the shortcut this project diagnoses, and the fix trades recall to avoid it._"
             if va != vm else "")
     return (f"**All-data detector** (trained on the whole merged benchmark): "
             f"**{va}** ({pa*100:.0f}% malicious)\n\n"
@@ -62,8 +62,8 @@ demo = gr.Interface(
     inputs=gr.Textbox(lines=16, label="SKILL.md content", placeholder="Paste a SKILL.md file here..."),
     outputs=gr.Markdown(label="Detector verdicts"),
     title="SkillShift — do malicious-skill detectors learn the source or the threat?",
-    description=("Two text detectors for malicious agent skills. The all-data one wrongly flags ~30% "
-                 "of real GitHub skills; the fixed one flags ~5%. Paste a SKILL.md to see them differ. "
+    description=("Two text detectors for malicious agent skills. On 400 unlabeled public GitHub skills the "
+                 "all-data detector flags ~30% as malicious and the fixed one ~5%. Paste a SKILL.md to see them differ. "
                  "github.com/Aryanbhargava18/SkillShift"),
 )
 

@@ -16,8 +16,7 @@
 Why Detectors Fail on Unseen Sources, and What the Fix Really Learns}
 
 \author{\IEEEauthorblockN{Aryan Bhargava}
-\IEEEauthorblockA{Newton School of Technology, Rishihood University\\
-\url{https://github.com/Aryanbhargava18/SkillShift}}}
+\IEEEauthorblockA{\url{https://github.com/Aryanbhargava18/SkillShift}}}
 
 \maketitle
 
@@ -25,22 +24,28 @@ Why Detectors Fail on Unseen Sources, and What the Fix Really Learns}
 Agent skills (\texttt{SKILL.md} files) extend LLM agents with instructions and scripts, and malicious skills are an
 emerging supply-chain threat. On MaliciousSkillBench, text classifiers that look strong on a random split
 wrongly flag about two thirds of benign skills from sources they have not seen. We show why and test a fix.
+The failure is a known dataset-bias artifact~\cite{arp2022}; the contribution here is its decomposition in
+the agent-skill setting and a tested data-composition remedy.
 A TF-IDF probe names a skill's source benchmark from its text with \ProbeAcc{} accuracy over
 \ProbeSources{} sources, and platform boilerplate such as \texttt{openclaw} acts as a ``benign'' cue only
 because of how the benchmark's sources were mixed. Training only on sources that contain both labels cuts the
 benign false-positive rate on unseen sources from \FprAll{} to \FprMixed{} (95\% CI \FprMixedCI{}); this trades
 malicious recall at a fixed threshold (\RecallAll{} to \RecallMixed{}) but improves ranking, raising PR-AUC
-from \PrAll{} to \PrMixed{} and recall at a 2\% false-positive budget from \RecallAtTwoAll{} to \RecallAtTwoMixed{}.
+from \PrAll{} to \PrMixed{} and recall at a 2\% false-positive budget (oracle threshold) from \RecallAtTwoAll{} to \RecallAtTwoMixed{}.
 A size-matched all-data control stays at \FprSizeMatched{}.
 We then ask what this fix actually learns. Almost all of that training data is one source built from
 minimal pairs: a benign skill and a copy with an injected payload. \MechanismSentence{}
-\TransformerSentence{} The same shortcut is an attack surface: appending \EvasionK{} benign
-source-style tokens evades \EvasionAsrAll{} of caught malicious skills, against \EvasionControlAll{}
-for random tokens, and the fix lowers this to \EvasionAsrMixed{}.
-On \WildN{} real \texttt{SKILL.md} files from public GitHub, the merged-data detector flags
-\WildFlaggedAll{} as malicious and the fixed one \WildFlaggedMixed{}, so the over-blocking is a
-deployment problem, not a benchmark artifact.
-We release code, per-skill scores, and an ONNX scanner, and argue that
+\TransformerSentence{} The over-block also reproduces on a 4-bit QLoRA Qwen2.5-0.5B decoder
+(\LoraFprAll{} all-data, \LoraFprMixed{} mixed-only), so it spans linear, encoder and decoder models,
+though at that training budget the fix trades recall without the ranking gain. The same shortcut, in the
+linear detector, is an attack surface: appending \EvasionK{} benign source-style tokens evades
+\EvasionAsrAll{} of caught malicious skills, against \EvasionControlAll{} for random tokens, and the fix
+lowers this to \EvasionAsrMixed{}.
+On \WildN{} unlabeled real \texttt{SKILL.md} files from public GitHub, the merged-data detector flags
+\WildFlaggedAll{} as malicious and the fixed one \WildFlaggedMixed{}, so the over-blocking survives outside
+the benchmark; because these files are unlabeled this measures over-blocking of presumed-benign skills, not
+a calibrated false-positive rate.
+We release code, per-skill scores, and an int8 ONNX scanner (the mixed-only ModernBERT), and argue that
 skill-detection benchmarks should report unseen-source false-positive rates with the threshold fixed in
 advance, and should state how their malicious and benign examples were constructed.
 \end{abstract}
@@ -75,13 +80,13 @@ which single-label sources bring the false positives back, and whether simply ma
 enough (\S\ref{sec:mechanism}).
 \item We fine-tune ModernBERT and, as a decoder-LLM check, a QLoRA Qwen2.5-0.5B on both training sets and
 compare them with the TF-IDF models on the same test skills with paired bootstrap intervals
-(\S\ref{sec:transformer}); the unseen-source over-block holds across all three model classes, and we ship
-the result as an int8 ONNX scanner.
+(\S\ref{sec:transformer}); the unseen-source over-block holds across all three model classes, and we
+release the mixed-only ModernBERT as an int8 ONNX scanner.
 \item We show the same shortcut is an \emph{attack surface}: a good-word attack~\cite{lowd2005} using
-source-style tokens evades the detector well beyond a random-token control, and the mixed-only fix
+source-style tokens evades the linear detector well beyond a random-token control, and the mixed-only fix
 shrinks the evasion surface as it shrinks the false-positive rate (\S\ref{sec:attack}).
-\item We confirm the effect on real data: on \WildN{} public GitHub skills the merged-data detector
-flags \WildFlaggedAll{} as malicious and the fixed one \WildFlaggedMixed{} (\S\ref{sec:wild}).
+\item We confirm the divergence on real data: on \WildN{} unlabeled public GitHub skills the merged-data
+detector flags \WildFlaggedAll{} and the fixed one \WildFlaggedMixed{} (\S\ref{sec:wild}).
 \end{itemize}
 
 \section{Data and evaluation}
@@ -125,18 +130,22 @@ find in SkillTrustBench.
 where a store URL became a top ``benign'' feature, and recommend per-source datasets that contain both
 classes. Fomin~\cite{fomin2026} shows, for malicious-prompt classifiers, that source identity is predictable
 from text and that thresholds do not transfer across held-out datasets. In the skill domain,
-MaliciousSkillBench~\cite{msb2026} reports the source-disjoint gap, a class-balancing control and a scaffold
-sanitization control, and SkillScreen~\cite{skillscreen2026} reports transformer results and threshold
-non-transfer on the same split. Neither tests source predictability, source-composition interventions, or
-the role of minimal pairs.
+MaliciousSkillBench~\cite{msb2026} reports the source-disjoint gap together with a class-balancing control
+and a scaffold-sanitization control, and SkillScreen~\cite{skillscreen2026} reports that gates tuned to
+8--11\% validation false-positive rate on the training sources flag 56--64\% of benign skills on unseen
+sources, against 62--84\% for a fully fine-tuned ModernBERT-large encoder. Both document the benign-source
+shift; neither tests whether the source is predictable from text, isolates the minimal-pair mechanism, or
+treats the shortcut as an attack surface, and the remedy both suggest is to add more benign sources rather
+than to select the sources that already contain both labels.
 
 We are explicit about what is and is not new. That merging sources creates a label shortcut, and that
 per-source both-class data is the remedy, is Arp et al.~\cite{arp2022}; we do not claim either. Our
 contribution is the empirical decomposition in the agent-skill domain: the source-identity probe, the
-minimal-pair versus label-mixing ablation, the dose-response that locates MalSkillBench as the culprit,
-and the attack$\leftrightarrow$false-positive symmetry. It is also a sharper intervention than the
-benchmark's own control: MaliciousSkillBench's class balancing lowers the word model's benign FPR only to
-about 43\%~\cite{msb2026}, against our \FprMixed{} from source selection.
+minimal-pair versus label-mixing ablation, the dose-response that locates the largest single-label
+malicious source as the culprit, the attack$\leftrightarrow$false-positive symmetry, and a real-world audit
+of public GitHub skills. The intervention is also sharper than global balancing: re-weighting every
+(source, label) group equally leaves the style signal in place (\S\ref{sec:fix}), while selecting the
+both-label sources removes it, cutting the word model's benign FPR to \FprMixed{}.
 
 \input{sections/discussion}
 

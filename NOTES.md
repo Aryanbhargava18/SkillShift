@@ -106,3 +106,13 @@ Any number reported as "at 1% FPR" has to say where the threshold came from.
 1. Why does the size-matched control matter? What claim would be unsupported without it?
 2. Mixed-only catches fewer malicious skills at threshold 0.5 but has a higher PR-AUC. How can both be true?
 3. Why can't we trust a threshold tuned on validation here?
+
+## Steps 5+ (written up in the paper)
+
+These notes stop at the classical fix. The later steps — the ModernBERT fine-tune, the Qwen2.5-0.5B
+QLoRA decoder, the mechanism ablations (minimal-pair vs label-mixing, the dose-response, token masking),
+the good-word evasion attack, the real-GitHub audit, and the ONNX scanner — are in `paper/skillshift.pdf`,
+with every number generated from `results/*.json`. One-line summary: the over-block reproduces on all three
+model classes (word-LR, encoder, decoder); the data fix cuts unseen-source benign FPR each time; the fix's
+ranking gain shows on the two fully-trained models but not on the single-epoch decoder; and the same
+shortcut is an evasion channel the fix also narrows.

@@ -11,12 +11,9 @@ Writes the SAME schema as the transformer run so compare_models.py and make_tabl
     results/transformer/<run>_scores.csv   per-skill validation/test scores
     models/<run>/                          LoRA adapter + tokenizer (gitignored)
 
-Why this exists:
-- Paper: a third model class (LoRA on a decoder LLM, as SkillScreen used) alongside TF-IDF and
-  ModernBERT. If the shortcut survives here too, it is a property of the data, not the model.
-- Portfolio: a self-contained "parameter-efficient fine-tune + evaluation harness" artifact, which
-  is the concrete thing many LLM job postings ask for. The harness is skillshift.metrics + the
-  source-disjoint split; LoRA only swaps the model.
+Why this exists: a third model class (a LoRA-tuned decoder LLM, as SkillScreen does) alongside the
+TF-IDF models and ModernBERT. If the shortcut survives here too, it is a property of the data, not
+the model. The eval harness is skillshift.metrics on the source-disjoint split; LoRA only swaps the model.
 """
 
 import argparse
@@ -105,7 +102,7 @@ def main() -> None:
     lora = LoraConfig(task_type=TaskType.SEQ_CLS, r=args.lora_r, lora_alpha=args.lora_alpha,
                       lora_dropout=0.05, target_modules=LORA_TARGETS, bias="none")
     model = get_peft_model(base, lora).to(device)
-    model.print_trainable_parameters()  # the PEFT selling point: <1% of params trained
+    model.print_trainable_parameters()  # only the adapter trains: <1% of params
 
     # Class-weighted loss, so benign skills (the minority) count as much as malicious ones.
     w = torch.tensor([len(train) / (2 * (train.label == c).sum()) for c in (0, 1)],

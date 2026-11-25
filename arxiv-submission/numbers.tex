@@ -22,7 +22,7 @@
 \newcommand{\MixedSkillTrojan}{3}
 \newcommand{\MechanismSentence}{In these sources 83\% of malicious skills are injected copies of a benign skill; breaking the pairs raises the benign false-positive rate only to 10\%, modestly above the 6\% of a size-matched mixed-only control (both over three seeds) and far below the 65\% of all-data, so label mixing within a source drives most of the gain while the pairing adds a little.}
 \newcommand{\TransformerSentence}{A fine-tuned ModernBERT shows the same pattern: trained on all data it flags 79\% of unseen-source benign skills, and trained on mixed-label sources only 20\%, so the over-blocking is not merely an artifact of the linear model.}
-\newcommand{\DecoderSentence}{A QLoRA-fine-tuned Qwen2.5-0.5B decoder (4-bit, one epoch) shows the same over-block: trained on all data it flags 80\% of unseen-source benign skills and on mixed-label sources only 1.8\% (95\% CI [0.7\%, 3.1\%]), so the false-positive effect spans linear, encoder and decoder models. On this small decoder the fix is a pure false-positive/recall operating-point trade: malicious recall falls 97\%$\to$12\% and ranking is unchanged (PR-AUC 0.79 vs 0.78), so unlike the word model it buys no ranking gain, as expected for a 0.5B model fine-tuned for a single epoch.}
+\newcommand{\DecoderSentence}{A QLoRA-fine-tuned Qwen2.5-0.5B decoder (4-bit, one epoch) shows the same over-block: trained on all data it flags 80\% of unseen-source benign skills and on mixed-label sources only 1.8\% (95\% CI [0.7\%, 3.1\%]), so the false-positive effect spans linear, encoder and decoder models. On this small decoder the fix is a pure false-positive/recall operating-point trade: malicious recall falls 97\%$\to$12\% and ranking is unchanged (PR-AUC 0.79 vs 0.78), so unlike the fully-trained word-LR and ModernBERT models it shows no ranking gain, as expected for a 0.5B model fine-tuned for a single epoch.}
 \newcommand{\ConclusionMechanism}{On this benchmark the gain survives breaking the benign--malicious pairs, so it rests on label mixing within a source rather than on paired construction.}
 \newcommand{\LoraFprAll}{80\%}
 \newcommand{\LoraFprMixed}{1.8\%}
@@ -48,6 +48,8 @@
 \newcommand{\MbSfbAll}{100\%}
 \newcommand{\MbAtrMixed}{4\%}
 \newcommand{\MbSfbMixed}{100\%}
+\newcommand{\MbPrAll}{0.66}
+\newcommand{\MbPrMixed}{0.79}
 \newcommand{\ProbeBalAcc}{76.0\%}
 \newcommand{\WildN}{400}
 \newcommand{\WildFlaggedAll}{30\%}

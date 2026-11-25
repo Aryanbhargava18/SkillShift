@@ -21,14 +21,19 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
+\bibitem{arp2022}
+D.~Arp, E.~Quiring, F.~Pendlebury, A.~Warnecke, F.~Pierazzi, C.~Wressnegger,
+  L.~Cavallaro, and K.~Rieck, ``Dos and don'ts of machine learning in computer
+  security,'' in \emph{31st USENIX Security Symposium}, 2022.
+
 \bibitem{msb2026}
 Y.~Wang, Y.~Liu, G.~Deng, Y.~Zhang, Y.~Li, Z.~Chen, and L.~Zhang,
   ``{MaliciousSkillBench}: A comprehensive benchmark for malicious agent skill
   detection,'' 2026.
 
 \bibitem{skillscreen2026}
-Huang, Quan, Lyu, Guo, and Ge, ``{SkillScreen},'' 2026, full title and author
-  names: see the arXiv record.
+J.~Huang, J.~Quan, S.~Lyu, Z.~Guo, and Y.~Ge, ``{SkillScreen}: High-recall
+  screening of malicious agent skills with decision models,'' 2026.
 
 \bibitem{torralba2011}
 A.~Torralba and A.~A. Efros, ``Unbiased look at dataset bias,'' in
@@ -56,11 +61,6 @@ R.~Compton, L.~Zhang, A.~Puli, and R.~Ranganath, ``When more is less:
   Incorporating additional datasets can hurt performance by introducing
   spurious correlations,'' in \emph{Machine Learning for Healthcare (MLHC)},
   2023.
-
-\bibitem{arp2022}
-D.~Arp, E.~Quiring, F.~Pendlebury, A.~Warnecke, F.~Pierazzi, C.~Wressnegger,
-  L.~Cavallaro, and K.~Rieck, ``Dos and don'ts of machine learning in computer
-  security,'' in \emph{31st USENIX Security Symposium}, 2022.
 
 \bibitem{fomin2026}
 M.~Fomin, ``When benchmarks lie: Evaluating malicious prompt classifiers under

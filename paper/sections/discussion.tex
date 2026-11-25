@@ -24,7 +24,11 @@ realistic prevalence would be much lower than the precision implied here, which 
 than accuracy.
 
 \textbf{Compute.} ModernBERT was fine-tuned once per training set (seed 0) on a laptop GPU, on the first 512
-tokens only. Transformer results are a single run, not a distribution over seeds.
+tokens only, and the Qwen2.5-0.5B QLoRA decoder once per training set on a single free-tier GPU (4-bit, one
+epoch). Both transformer results are single runs, not distributions over seeds, and the decoder is
+deliberately undertrained: its one-epoch budget is the most likely reason the ranking gain does not
+transfer to it, and more epochs could change that. The classical ablations average three seeds; the
+transformers do not.
 
 \textbf{Stronger baselines.} We show that static (source, label) re-weighting does not close the gap,
 but we do not evaluate GroupDRO, JTT, or adversarial source-removal. Our claim is that a simple

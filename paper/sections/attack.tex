@@ -1,12 +1,13 @@
-\section{The shortcut is also an attack surface, and the fix helps here too}
+\section{The shortcut is also an attack surface}
 \label{sec:attack}
 The source shortcut does not only make detectors over-block benign skills from unseen sources; it lets
 an attacker evade them. Appending benign source-style tokens to a malicious skill is a good-word
 attack~\cite{lowd2005}; the honest question is whether the \emph{source-style} tokens help beyond the
-dilution that appending any text causes to a TF-IDF vector. We answer with a dose-response: at each
-size $k$ we append the all-data detector's top-$k$ benign-weighted features, and as a control $k$
-random vocabulary tokens, to every malicious test skill the detector catches at its deployment
-threshold.
+dilution that appending any text causes to a TF-IDF vector. We answer with a dose-response on the linear
+word-LR detector, whose benign-weighted features are directly readable: at each size $k$ we append its
+top-$k$ benign-weighted features, and as a control $k$ random vocabulary tokens, to every malicious test
+skill it catches at its deployment threshold. The same construction would need a gradient or query budget
+against the transformers; we demonstrate the mechanism where the shortcut is legible.
 
 At every $k$ the source-style tokens evade far more than random ones. With only \EvasionK{} injected
 tokens, \EvasionAsrAll{} of caught malicious skills fall below threshold, against \EvasionControlAll{}

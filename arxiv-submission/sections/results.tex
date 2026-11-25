@@ -54,8 +54,8 @@ mixed-label sources only & \FprMixed{} & \RecallMixed{} & \PrMixed{} & \RecallAt
 \textbf{The fix is a ranking improvement, not a free win.} At the default $0.5$ threshold the mixed-only
 model catches \RecallMixed{} of malicious skills, down from \RecallAll{}, and at the deployable
 validation-set threshold only \RecallMixedDeploy{}. What improves is the ranking: PR-AUC rises
-\PrAll{}$\to$\PrMixed{} and recall at a 2\% false-alarm budget rises \RecallAtTwoAll{}$\to$\RecallAtTwoMixed{}, so
-at any fixed low false-alarm rate the fixed model catches far more. We report the fix as an operating-point
+\PrAll{}$\to$\PrMixed{} and recall at a 2\% false-alarm budget rises \RecallAtTwoAll{}$\to$\RecallAtTwoMixed{}, roughly a sixfold
+gain, so at any fixed low false-alarm rate the fixed model catches far more. We report the fix as an operating-point
 and ranking shift, not a strict win.
 
 \textbf{It is not simply ``less data''.} Mixed-only training uses far fewer skills than all-data. A
@@ -95,8 +95,7 @@ To check that the shortcut is a property of the data and not of linear models, w
 ModernBERT-base (one seed per training set) on both training sets and score it on the same
 unseen-source test skills, comparing every model with a paired, class-stratified bootstrap.
 \TransformerSentence{} Per-source rates on the small benign test groups (ATR, SkillFortifyBench) are
-reported with exact Clopper-Pearson intervals, since ATR contributes only \TestAtrBenign{} of the
-\TestBenign{} benign test skills. The aggregate hides a per-source split: the mixed-only ModernBERT
+reported with exact Clopper-Pearson intervals, since the benign test set is small (\TestBenign{} skills) and \TestAtrBenign{} of them are ATR. The aggregate hides a per-source split: the mixed-only ModernBERT
 reaches \MbAtrMixed{} FPR on ATR but \MbSfbMixed{} on SkillFortifyBench (the all-data model is
 \MbAtrAll{} and \MbSfbAll{}), where benign and malicious skills differ by a single command. On that
 source the data fix does not help the transformer, while the word-LR reaches 0\%\,---\,so here the
@@ -104,9 +103,11 @@ model class does matter, and the ``not an artifact of the linear model'' claim h
 released int8 ONNX scanner is this mixed-only ModernBERT (benign FPR \MbAtrMixed{} on ATR, 20\%
 aggregate; int8 changes 2.2\% of verdicts); the lower-FPR detector is the word-LR.
 
-\textbf{A decoder LLM.} \DecoderSentence{} The false-positive effect thus holds across all three model
-classes we test, while the ranking improvement appears only in the models with enough capacity and
-training to exploit it.
+\textbf{A decoder LLM.} \DecoderSentence{} The benign false-positive effect thus holds across all three
+model classes. The ranking improvement, by contrast, reproduces on both fully-trained models\,---\,the
+linear word-LR (PR-AUC \PrAll{}$\to$\PrMixed{}) and ModernBERT (\MbPrAll{}$\to$\MbPrMixed{})\,---\,and is
+absent only on the single-epoch, 4-bit decoder, so the dividing line is training budget and convergence,
+not model capacity.
 
 \section{A real-world check}
 \label{sec:wild}
@@ -115,7 +116,7 @@ real \texttt{SKILL.md} files from public GitHub repositories\,---\,unlabeled, bu
 published skills, and \WildOpenclaw{} of them contain the \texttt{openclaw} token, confirming the
 shortcut feature is common in the wild. The all-data detector flags \WildFlaggedAll{} of these real
 skills as malicious at the default threshold; the mixed-only detector flags \WildFlaggedMixed{}. On
-real-world data the source-composition fix reduces over-blocking by the same large factor it does on the
+real-world data the source-composition fix reduces over-blocking severalfold, as it does on the
 benchmark, turning the diagnosis into a deployment estimate: a detector trained on the merged benchmark
 would block roughly a third of real GitHub skills, and the fix cuts that severalfold. These files are
 unlabeled, so this measures over-blocking of presumed-benign skills, not a calibrated false-positive
