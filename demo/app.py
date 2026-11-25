@@ -2,17 +2,14 @@
 
 Paste a SKILL.md and see two detectors score it: one trained on the whole merged benchmark (which keys
 on source style and over-blocks) and one trained only on both-label sources (the fix). The gap between
-them is the shortcut this project is about.
-
-The two word-TF-IDF + logistic-regression detectors are fit on startup from MaliciousSkillBench. Fitting
-runs in a background thread so the web server binds immediately and the Space passes its health check;
-the first scored request waits for fitting to finish (~15 s), later ones are instant.
+them is the shortcut this project is about. The two word-TF-IDF + logistic-regression detectors are fit
+from MaliciousSkillBench on startup (a few seconds).
 """
 
 import os
 os.environ.setdefault("GRADIO_SSR_MODE", "false")  # plain server, no SSR Node proxy (health-check safe)
 
-import threading
+import time
 
 import gradio as gr
 import pandas as pd
@@ -21,8 +18,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
 MIXED = {"SkillTrustBench", "AgentTrap", "SkillTrojan"}
-_STATE = {}
-_LOCK = threading.Lock()
 
 
 def _fit(train):
@@ -32,39 +27,25 @@ def _fit(train):
     return vec, model
 
 
-def _load():
-    d = snapshot_download("ProtectSkills/MaliciousSkillBench", repo_type="dataset", local_dir="msb")
-    p = pd.read_parquet(f"{d}/primary.parquet")
-    p["text"] = p.skill_text.fillna(p.public_skill_text).fillna("")
-    sp = pd.read_parquet(f"{d}/splits/source_disjoint.parquet")
-    df = sp[["benchmark_id", "split"]].merge(
-        p[["benchmark_id", "text", "label", "source_name"]], on="benchmark_id")
-    df["label"] = df.label.astype(int)
-    train = df[(df.split == "train")]
-    return _fit(train), _fit(train[train.source_name.isin(MIXED)])
-
-
-def _ensure():
-    with _LOCK:
-        if not _STATE:
-            print("fitting detectors...", flush=True)
-            _STATE["all"], _STATE["mix"] = _load()
-            print("ready.", flush=True)
-    return _STATE
-
-
-# Warm up in the background so launch() can bind the server right away.
-threading.Thread(target=_ensure, daemon=True).start()
+print("fitting detectors...", flush=True)
+_d = snapshot_download("ProtectSkills/MaliciousSkillBench", repo_type="dataset", local_dir="msb")
+_p = pd.read_parquet(f"{_d}/primary.parquet")
+_p["text"] = _p.skill_text.fillna(_p.public_skill_text).fillna("")
+_sp = pd.read_parquet(f"{_d}/splits/source_disjoint.parquet")
+_df = _sp[["benchmark_id", "split"]].merge(
+    _p[["benchmark_id", "text", "label", "source_name"]], on="benchmark_id")
+_df["label"] = _df.label.astype(int)
+_train = _df[_df.split == "train"]
+VEC_ALL, M_ALL = _fit(_train)
+VEC_MIX, M_MIX = _fit(_train[_train.source_name.isin(MIXED)])
+print("ready.", flush=True)
 
 
 def score(text):
     if not text or len(text.strip()) < 20:
         return "Paste a `SKILL.md` (at least a few lines) to compare the two detectors."
-    s = _ensure()
-    vec_all, m_all = s["all"]
-    vec_mix, m_mix = s["mix"]
-    pa = float(m_all.predict_proba(vec_all.transform([text]))[:, 1][0])
-    pm = float(m_mix.predict_proba(vec_mix.transform([text]))[:, 1][0])
+    pa = float(M_ALL.predict_proba(VEC_ALL.transform([text]))[:, 1][0])
+    pm = float(M_MIX.predict_proba(VEC_MIX.transform([text]))[:, 1][0])
     va = "MALICIOUS" if pa >= 0.5 else "benign"
     vm = "MALICIOUS" if pm >= 0.5 else "benign"
     note = ("\n\n_The two detectors disagree. The all-data detector is reacting to source **style**, not "
@@ -89,6 +70,10 @@ demo = gr.Interface(
 
 if __name__ == "__main__":
     try:
-        demo.launch(ssr_mode=False)
+        demo.launch(server_name="0.0.0.0", server_port=7860, ssr_mode=False)
     except TypeError:
-        demo.launch()
+        demo.launch(server_name="0.0.0.0", server_port=7860)
+    # Some gradio/Spaces combinations return from launch() instead of blocking; keep the process
+    # (and therefore the web server thread) alive so the Space stays up.
+    while True:
+        time.sleep(3600)
