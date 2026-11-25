@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SkillShift — source or threat?</title>
+<title>SkillShift demo</title>
 <meta name="description" content="Two malicious-skill detectors, run in your browser: one keys on source style and over-blocks, one is trained to avoid that shortcut.">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -72,12 +72,11 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Does a malicious-skill detector learn the source, or the threat?</h1>
-  <p class="sub">Paste a <code>SKILL.md</code> below. Two text detectors score it: one trained on the
-    <b>whole merged benchmark</b> — which quietly keys on each source's <b>writing style</b> and over-blocks —
-    and one trained <b>only on sources that contain both benign and malicious skills</b>, which forces it to
-    read content instead of style. Both are compact versions of the paper's linear baseline (word TF-IDF + logistic regression, 30k-term vocabulary instead of 200k), running
-    <b>entirely in your browser</b>. <span class="badge">no server · nothing to wake up</span></p>
+  <h1>Two malicious-skill detectors, side by side</h1>
+  <p class="sub">Paste a <code>SKILL.md</code>. One detector was trained on all benchmark sources merged; the
+    other only on sources that contain both benign and malicious skills. Both are compact versions of the
+    paper's linear baseline (word TF-IDF + logistic regression, 30k-term vocabulary instead of 200k) and run
+    in your browser.</p>
 
   <div class="card editor">
     <div class="exrow">
@@ -93,11 +92,10 @@
   <div id="out"></div>
 
   <div class="explain">
-    <p>On 400 <b>unlabeled</b> public GitHub skills, the all-data detector flags about <b>30%</b> as malicious
-      and the fixed one about <b>5%</b> — most of that gap is the all-data model reacting to how a <i>source</i>
-      writes, not to anything harmful. The fix removes most of the false alarms, at the cost of some recall.
-      That trade is the point: a detector that silently learns "which dataset is this from" looks strong on a
-      random split and quietly over-blocks in the wild.</p>
+    <p>In the paper, on 400 unlabeled public GitHub skills, the all-data model flags 30% as malicious and the
+      fixed one 5%. The files have no labels, so that measures how far the two disagree, not a false-positive
+      rate. On labeled skills from unseen sources the fix cuts false alarms sharply and costs recall at the
+      default threshold.</p>
     <div class="foot">
       <a href="https://github.com/Aryanbhargava18/SkillShift" target="_blank" rel="noopener">GitHub repository →</a>
       <a href="https://aryanbhargava18.github.io/SkillShift/" target="_blank" rel="noopener">Project write-up →</a>
@@ -148,9 +146,7 @@ function render(text){
   var html='<div class="results">'+
     card("All-data detector","trained on the whole merged benchmark",pa)+
     card("Fixed detector","trained only on both-label sources",pm)+'</div>';
-  html+='<div class="note'+(disagree?' show':'')+'">The two detectors <b>disagree</b>. The all-data detector '+
-    'is reacting to source <b>style</b>, not content — that is the shortcut this project diagnoses, and the '+
-    'fix trades some recall to avoid it.</div>';
+  html+='<div class="note'+(disagree?' show':'')+'">The detectors disagree. The all-data model is reacting to how this file\'s source writes, not to what the file does.</div>';
   out.innerHTML=html;
 }
 
