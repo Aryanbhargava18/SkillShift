@@ -76,7 +76,7 @@
   <p class="sub">Paste a <code>SKILL.md</code> below. Two text detectors score it: one trained on the
     <b>whole merged benchmark</b> — which quietly keys on each source's <b>writing style</b> and over-blocks —
     and one trained <b>only on sources that contain both benign and malicious skills</b>, which forces it to
-    read content instead of style. Both are the exact fitted models from the paper, running
+    read content instead of style. Both are compact versions of the paper's linear baseline (word TF-IDF + logistic regression, 30k-term vocabulary instead of 200k), running
     <b>entirely in your browser</b>. <span class="badge">no server · nothing to wake up</span></p>
 
   <div class="card editor">
