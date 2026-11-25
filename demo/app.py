@@ -6,6 +6,8 @@ between them is the shortcut this project is about. Self-contained: downloads Ma
 fits the two word-TF-IDF + logistic-regression detectors on startup (~15 s cold start).
 """
 
+import os
+os.environ.setdefault("GRADIO_SSR_MODE", "false")  # avoid SSR Node-proxy health-check failure on Spaces
 import gradio as gr
 import pandas as pd
 from huggingface_hub import snapshot_download
@@ -68,4 +70,7 @@ demo = gr.Interface(
 )
 
 if __name__ == "__main__":
-    demo.launch()
+    try:
+        demo.launch(ssr_mode=False)
+    except TypeError:
+        demo.launch()
